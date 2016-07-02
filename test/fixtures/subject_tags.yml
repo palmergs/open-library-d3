@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  taggable_id: 1
+  taggable_type: MyString
+  name: MyString
+  value: MyString
+
+two:
+  taggable_id: 1
+  taggable_type: MyString
+  name: MyString
+  value: MyString
