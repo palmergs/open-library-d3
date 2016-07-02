@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  work_id: 1
+  author_id: 1
+  rel_order: 1
+
+two:
+  work_id: 1
+  author_id: 1
+  rel_order: 1
