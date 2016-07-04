@@ -16,13 +16,13 @@ end
 
 group :test do
   gem 'database_cleaner'
-  gem 'simplecov'
+  gem 'simplecov', require: false
 end
 
 group :development, :test do
   gem 'rspec-rails'
   gem 'faker'
-  gem 'factory_girl'
+  gem 'factory_girl_rails'
   gem 'puma'
   gem 'pry-rails'
 end
