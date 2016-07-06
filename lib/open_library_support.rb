@@ -1,3 +1,5 @@
+require 'counter'
+
 class OpenLibrarySupport 
 
   attr_reader :authors_path, :works_path, :editions_path
@@ -7,45 +9,43 @@ class OpenLibrarySupport
     @authors_path = entries.select {|s| s =~ /authors/ }.first
     @works_path = entries.select {|s| s =~ /works/ }.first
     @editions_path = entries.select {|s| s =~ /editions/ }.first
+
+    raise "All file paths not found" unless @authors_path && @works_path && @editions_path
   end
 
 
   def read_authors
-    with_count do |cnt|
+    Counter.with_count do |cnt|
       File.open(authors_path) do |f|
         while line = f.gets
-          cnt += (create_author(line) ? 1 : 0)
+          cnt + (create_author(line) ? 1 : 0)
         end
       end
     end
   end
 
   def read_works
-    with_count do |cnt|
+    Counter.with_count do |cnt|
       File.open(works_path) do |f|
         while line = f.gets
-          cnt += (create_work(line) ? 1 : 0)
+          cnt + (create_work(line) ? 1 : 0)
         end
       end
     end
   end
 
   def read_editions
-    with_count do |cnt|
+    Counter.with_count do |cnt|
       File.open(editions_path) do |f|
         while line = f.gets
-          cnt += (create_edition(line) ? 1 : 0)
+          cnt + (create_edition(line) ? 1 : 0)
         end
       end
     end
   end
 
-  def with_count &block
-    yield(0)
-  end
-
   def create_work line
-    ident, revision, created_at, hash = parse_line(line)[3].keys.each {|k| hash[k] += 1 } 
+    ident, revision, created_at, hash = parse_line(line)
     if ident.present? && hash
       work = Work.find_or_create_by(ident: ident) do |obj|
         obj.title =       hash['title']
@@ -78,12 +78,18 @@ class OpenLibrarySupport
       hash.fetch('subject_times', []).each do |entry|
         work.subject_tags.create(name: 'period', value: entry)
       end
+
+      work
+    else
+      nil
     end
   end
 
   def create_author line
-    ident, revision, created_at, hash = parse_line(line)[3].keys.each {|k| hash[k] += 1 } 
-    if ident && hash
+    ident, revision, created_at, hash = parse_line(line)
+pp ident
+pp hash
+    if ident.present? && hash
       author = Author.find_or_create_by(ident: ident) do |obj|
         obj.name = hash['name']
         obj.personal_name = hash['personal_name']
@@ -93,7 +99,7 @@ class OpenLibrarySupport
       end
 
       if hash['website'].present?
-        author.external_links.create(name: hash['website', value: hash['website']
+        author.external_links.create(name: hash['website'], value: hash['website'])
       end
 
       if hash['location'].present?
@@ -103,13 +109,20 @@ class OpenLibrarySupport
       hash.fetch('links', []).each do |link|
         author.external_links.create(name: link['title'], value: link['url'])
       end
+
+pp author
+      author
+    else
+      nil
     end
   end
 
   def create_edition line
-    ident, revision, created_at, hash = parse_line(line)[3].keys.each {|k| hash[k] += 1 } 
+    ident, revision, created_at, hash = parse_line(line)
     if ident && hash
 
+    else
+      nil
     end
   end
 

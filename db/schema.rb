@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 20160702133854) do
     t.string   "ident",                    limit: 15
     t.string   "title",                                            null: false
     t.string   "subtitle"
+    t.string   "lcc",                      limit: 15
     t.integer  "pages"
     t.integer  "copyright_date"
     t.integer  "publish_date"
@@ -49,6 +50,7 @@ ActiveRecord::Schema.define(version: 20160702133854) do
   end
 
   add_index "editions", ["ident"], name: "index_editions_on_ident", using: :btree
+  add_index "editions", ["lcc"], name: "index_editions_on_lcc", using: :btree
   add_index "editions", ["work_id"], name: "index_editions_on_work_id", using: :btree
 
   create_table "editon_publishers", force: :cascade do |t|
@@ -95,12 +97,17 @@ ActiveRecord::Schema.define(version: 20160702133854) do
     t.string   "ident",          limit: 15
     t.string   "title",                                  null: false
     t.string   "subtitle"
+    t.string   "lcc",            limit: 15
     t.integer  "editions_count",            default: 0,  null: false
+    t.integer  "publish_date"
+    t.text     "sentence"
     t.text     "description",               default: "", null: false
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
   end
 
   add_index "works", ["ident"], name: "index_works_on_ident", using: :btree
+  add_index "works", ["lcc"], name: "index_works_on_lcc", using: :btree
+  add_index "works", ["publish_date"], name: "index_works_on_publish_date", using: :btree
 
 end

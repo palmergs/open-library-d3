@@ -6,6 +6,7 @@ class CreateEditions < ActiveRecord::Migration
       t.string :ident,  limit: 15,  index: true
       t.string :title, null: false
       t.string :subtitle
+      t.string :lcc, limit: 15, index: true
       t.integer :pages
       t.integer :copyright_date
       t.integer :publish_date
