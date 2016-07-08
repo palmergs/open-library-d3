@@ -3,4 +3,5 @@ class Edition < ActiveRecord::Base
 
   has_many :external_links, dependent: :destroy, as: :linkable
   has_many :subject_tags, dependent: :destroy, as: :taggable
+  has_many :edition_publishers, dependent: :destroy
 end
