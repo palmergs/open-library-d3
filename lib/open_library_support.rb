@@ -63,21 +63,12 @@ class OpenLibrarySupport
         work.work_authors.create(author: author, role: role) if author
       end
 
-      hash.fetch('subjects', []).each do |entry|
-        work.subject_tags.create(name: 'subject', value: entry)
-      end
-
-      hash.fetch('subject_places', []).each do |entry|
-        work.subject_tags.create(name: 'place', value: entry)
-      end
-
-      hash.fetch('subject_people', []).each do |entry|
-        work.subject_tags.create(name: 'person', value: entry)
-      end
-
-      hash.fetch('subject_times', []).each do |entry|
-        work.subject_tags.create(name: 'period', value: entry)
-      end
+      add_tags(hash, work, 'genres', 'genre')
+      add_tags(hash, work, 'subjects', 'subject')
+      add_tags(hash, work, 'subject_time', 'period')
+      add_tags(hash, work, 'subject_people', 'person')
+      add_tags(hash, work, 'subject_places', 'place')
+      add_tags(hash, work, 'series', 'series')
 
       work
     else
@@ -87,8 +78,6 @@ class OpenLibrarySupport
 
   def create_author line
     ident, revision, created_at, hash = parse_line(line)
-pp ident
-pp hash
     if ident.present? && hash
       author = Author.find_or_create_by(ident: ident) do |obj|
         obj.name = hash['name']
@@ -102,15 +91,12 @@ pp hash
         author.external_links.create(name: hash['website'], value: hash['website'])
       end
 
-      if hash['location'].present?
-        author.subject_tags.create(name: 'location', value: hash['location'])
-      end
-
       hash.fetch('links', []).each do |link|
         author.external_links.create(name: link['title'], value: link['url'])
       end
 
-pp author
+      add_tag(hash, author, 'location', 'location')
+
       author
     else
       nil
@@ -120,9 +106,57 @@ pp author
   def create_edition line
     ident, revision, created_at, hash = parse_line(line)
     if ident && hash
+      edition = Edition.find_or_create_by(ident: ident) do |obj|
+        obj.work = Work.find_by(ident: open_library_id(hash['works'].first['key']))
+        obj.title = hash['title']
+        obj.subtitle = hash['subtitle']
+        obj.pages = nil_or_int(hash['number_of_pages'])
+        obj.format = hash['physical_format']
+        obj.publish_date = nil_or_int(hash.fetch('publish_date', '').split(/[\s,]+/).last)
+        obj.lcc = hash['lc_classifications']
 
+        description = hash['description'] || hash['notes']
+        obj.description = description['value'] if description && description['value']
+      end
+
+      hash.fetch('publishers', []).each do |str|
+        edition.edition_publishers.create(name: str)
+      end
+
+      hash.fetch('goodreads', []).each do |str|
+        goodreads_id = str.to_i
+        if goodreads_id > 0
+          edition.external_links.create(name: 'Goodreads', value: "https://www.goodreads.com/book/show/#{ goodreads_id }") 
+        end
+      end
+
+      add_tags(hash, edition, 'genres', 'genre')
+      add_tags(hash, edition, 'subjects', 'subject')
+      add_tags(hash, edition, 'subject_time', 'period')
+      add_tags(hash, edition, 'subject_people', 'person')
+      add_tags(hash, edition, 'subject_places', 'place')
+      add_tags(hash, edition, 'series', 'series')
+      add_tags(hash, edition, 'source_records', 'source')
+      add_tags(hash, edition, 'oclc_numbers', 'oclc')
+      add_tags(hash, edition, 'isbn_13', 'isbn')
+      add_tags(hash, edition, 'isbn_10', 'isbn10')
+
+      edition
     else
       nil
+    end
+  end
+
+  def add_tag hash, obj, hash_key, name
+    val = hash[hash_key]
+    if val.is_a?(String) && val.strip.present?
+      obj.subject_tags.create(name: name, value: val.strip)
+    end
+  end
+
+  def add_tags hash, obj, hash_key, name
+    hash.fetch(hash_key, []).each do |str|
+      obj.subject_tags.create(name: name, value: str.strip) if str.strip.present?
     end
   end
 
