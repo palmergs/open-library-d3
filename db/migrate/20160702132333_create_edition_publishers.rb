@@ -1,6 +1,6 @@
-class CreateEditonPublishers < ActiveRecord::Migration
+class CreateEditionPublishers < ActiveRecord::Migration
   def change
-    create_table :editon_publishers do |t|
+    create_table :edition_publishers do |t|
       t.string :name, null: false, limit: 63
       t.integer :edition_id, null: false, index: true
 

@@ -30,6 +30,15 @@ ActiveRecord::Schema.define(version: 20160702133854) do
 
   add_index "authors", ["ident"], name: "index_authors_on_ident", using: :btree
 
+  create_table "edition_publishers", force: :cascade do |t|
+    t.string   "name",       limit: 63, null: false
+    t.integer  "edition_id",            null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "edition_publishers", ["edition_id"], name: "index_edition_publishers_on_edition_id", using: :btree
+
   create_table "editions", force: :cascade do |t|
     t.integer  "work_id",                                          null: false
     t.integer  "edition_publishers_count",            default: 0,  null: false
@@ -52,15 +61,6 @@ ActiveRecord::Schema.define(version: 20160702133854) do
   add_index "editions", ["ident"], name: "index_editions_on_ident", using: :btree
   add_index "editions", ["lcc"], name: "index_editions_on_lcc", using: :btree
   add_index "editions", ["work_id"], name: "index_editions_on_work_id", using: :btree
-
-  create_table "editon_publishers", force: :cascade do |t|
-    t.string   "name",       limit: 63, null: false
-    t.integer  "edition_id",            null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "editon_publishers", ["edition_id"], name: "index_editon_publishers_on_edition_id", using: :btree
 
   create_table "external_links", force: :cascade do |t|
     t.integer  "linkable_id",              null: false
