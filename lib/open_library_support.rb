@@ -47,10 +47,10 @@ class OpenLibrarySupport
   def create_work line
     ident, revision, created_at, hash = parse_line(line)
     if ident.present? && hash
-      work = Work.find_or_create_by(ident: ident) do |obj|
-        obj.title =       hash['title']
+      work = Work.create(ident: ident) do |obj|
+        obj.title =       hash['title'] || 'unknown'
         obj.subtitle =    hash['subtitle']
-        obj.description = hash.fetch('description', {}).fetch('value', '')
+        obj.description = safe_sub(hash, 'description') || ''
         obj.sentence =    hash.fetch('first_sentence', {}).fetch('value', nil)
         obj.lcc =         hash['lc_classifications']
         obj.publish_date = nil_or_int(hash['first_publish_date'])
@@ -79,12 +79,12 @@ class OpenLibrarySupport
   def create_author line
     ident, revision, created_at, hash = parse_line(line)
     if ident.present? && hash
-      author = Author.find_or_create_by(ident: ident) do |obj|
-        obj.name = hash['name']
+      author = Author.create(ident: ident) do |obj|
+        obj.name = hash['name'] || 'unknown'
         obj.personal_name = hash['personal_name']
         obj.birth_date =  nil_or_int(hash['birth_date'])
         obj.death_date =  nil_or_int(hash['death_date'])
-        obj.description = hash.fetch('bio', {}).fetch('value', '')
+        obj.description = safe_sub(hash, 'bio') || ''
       end
 
       if hash['website'].present?
@@ -106,17 +106,16 @@ class OpenLibrarySupport
   def create_edition line
     ident, revision, created_at, hash = parse_line(line)
     if ident && hash
-      edition = Edition.find_or_create_by(ident: ident) do |obj|
+      edition = Edition.create(ident: ident) do |obj|
         obj.work = Work.find_by(ident: open_library_id(hash['works'].first['key']))
-        obj.title = hash['title']
+        obj.title = hash['title'] || 'unknown'
         obj.subtitle = hash['subtitle']
         obj.pages = nil_or_int(hash['number_of_pages'])
         obj.format = hash['physical_format']
         obj.publish_date = nil_or_int(hash.fetch('publish_date', '').split(/[\s,]+/).last)
         obj.lcc = hash['lc_classifications']
 
-        description = hash['description'] || hash['notes']
-        obj.description = description['value'] if description && description['value']
+        obj.description = safe_sub(hash, 'description') || safe_sub(hash, 'notes') || ''
       end
 
       hash.fetch('publishers', []).each do |str|
@@ -173,6 +172,13 @@ class OpenLibrarySupport
     return nil unless str
     i = str.to_i
     return zero_valid || i > 0 ? i : nil 
+  end
+
+  def safe_sub hash, key, subkey = 'value'
+    tmp = hash[key]
+    return nil unless tmp
+    return tmp[subkey] if tmp.is_a?(Hash)
+    return tmp.to_s
   end
 
 
