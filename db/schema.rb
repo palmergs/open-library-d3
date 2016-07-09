@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160702133854) do
+ActiveRecord::Schema.define(version: 20160708165026) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,9 +85,10 @@ ActiveRecord::Schema.define(version: 20160702133854) do
   add_index "subject_tags", ["taggable_id", "taggable_type"], name: "index_subject_tags_on_taggable_id_and_taggable_type", using: :btree
 
   create_table "work_authors", force: :cascade do |t|
-    t.integer "work_id",               null: false
-    t.integer "author_id",             null: false
-    t.integer "rel_order", default: 0, null: false
+    t.integer "work_id",                                 null: false
+    t.integer "author_id",                               null: false
+    t.integer "rel_order",            default: 0,        null: false
+    t.string  "role",      limit: 24, default: "author", null: false
   end
 
   add_index "work_authors", ["author_id"], name: "index_work_authors_on_author_id", using: :btree

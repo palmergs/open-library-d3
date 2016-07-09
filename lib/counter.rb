@@ -9,7 +9,7 @@ class Counter
 
   def add value
     @counter = @counter + value.to_i
-    if @counter + 1 % display_on == 0
+    if (@counter + 1) % display_on == 0
       puts '.'
     end
     self

@@ -28,4 +28,34 @@ RSpec.describe OpenLibrarySupport, as: :lib do
       expect(cnt).to eq(11)
     end
   end                                                   
+
+  describe 'handling etl edge cases' do
+
+    let(:ols) { OpenLibrarySupport.new('spec/samples/export') }
+
+
+    it 'handles variour lcc formats' do
+      expect(ols.safe_lcc(nil)).to be_nil
+      expect(ols.safe_lcc([])).to be_nil
+      expect(ols.safe_lcc([''])).to be_nil
+      expect(ols.safe_lcc('AB123.123')).to eq('AB123.123')
+      expect(ols.safe_lcc(['AB123.123'])).to eq('AB123.123')
+    end
+
+    it 'can handle tags that are strings or hashes' do
+
+      hash = HashWithIndifferentAccess.new({"subject_places": ["Russia (Federation)", "Sakhalin (Sakhalinskai\ufe20a\ufe21 oblast\u02b9)", "Sakhalin (Russia)", "Sakhalin", "Sakhalin (Sakhalinskai\ufe20a\ufe21 oblast\u02b9, Russia)"], "subject_people": [{"type": "/type/text", "value": "Anton Pavlovich Chekhov (1860-1904)"}] })
+
+      obj = create(:author)
+      ols.add_tags(hash, obj, 'subject_places', 'place')
+      ols.add_tags(hash, obj, 'subject_people', 'person')
+      obj.reload
+
+      expect(obj.subject_tags.where(name: 'place').count).to eq(5)
+      expect(obj.subject_tags.where(name: 'place').first.value).to eq('Russia (Federation)')
+      expect(obj.subject_tags.where(name: 'person').count).to eq(1)
+      expect(obj.subject_tags.where(name: 'person').first.value).to eq('Anton Pavlovich Chekhov (1860-1904)')
+
+    end
+  end
 end

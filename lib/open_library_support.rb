@@ -2,45 +2,58 @@ require 'counter'
 
 class OpenLibrarySupport 
 
-  attr_reader :authors_path, :works_path, :editions_path
+  attr_reader :authors_path, :works_path, :editions_path, :only
 
-  def initialize path
+  def initialize path, only: []
     entries = Dir.glob(File.join(path, "*.txt"))
     @authors_path = entries.select {|s| s =~ /authors/ }.first
     @works_path = entries.select {|s| s =~ /works/ }.first
     @editions_path = entries.select {|s| s =~ /editions/ }.first
+    @only = only || []
 
     raise "All file paths not found" unless @authors_path && @works_path && @editions_path
   end
 
 
   def read_authors
-    Counter.with_count do |cnt|
-      File.open(authors_path) do |f|
-        while line = f.gets
-          cnt + (create_author(line) ? 1 : 0)
+    if only.empty? || only.include?(:authors) 
+      Counter.with_count do |cnt|
+        File.open(authors_path) do |f|
+          while line = f.gets
+            cnt + (create_author(line) ? 1 : 0)
+          end
         end
       end
+    else
+      Author.count
     end
   end
 
   def read_works
-    Counter.with_count do |cnt|
-      File.open(works_path) do |f|
-        while line = f.gets
-          cnt + (create_work(line) ? 1 : 0)
+    if only.empty? || only.include?(:works)
+      Counter.with_count do |cnt|
+        File.open(works_path) do |f|
+          while line = f.gets
+            cnt + (create_work(line) ? 1 : 0)
+          end
         end
       end
+    else
+      Work.count
     end
   end
 
   def read_editions
-    Counter.with_count do |cnt|
-      File.open(editions_path) do |f|
-        while line = f.gets
-          cnt + (create_edition(line) ? 1 : 0)
+    if only.empty? || only.include?(:editions)
+      Counter.with_count do |cnt|
+        File.open(editions_path) do |f|
+          while line = f.gets
+            cnt + (create_edition(line) ? 1 : 0)
+          end
         end
       end
+    else
+      Edition.count
     end
   end
 
@@ -52,15 +65,17 @@ class OpenLibrarySupport
         obj.subtitle =    hash['subtitle']
         obj.description = safe_sub(hash, 'description') || ''
         obj.sentence =    hash.fetch('first_sentence', {}).fetch('value', nil)
-        obj.lcc =         hash['lc_classifications']
+        obj.lcc =         safe_lcc(hash['lc_classifications'])
         obj.publish_date = nil_or_int(hash['first_publish_date'])
       end
 
       hash.fetch('authors', []).each do |entry|
-        aid = open_library_id(entry['author']['key'])
+        aid = open_library_id(entry.fetch('author', {})['key'] || entry['author'].to_s) 
         role = 'author'
-        author = Author.find_by(ident: aid)
-        work.work_authors.create(author: author, role: role) if author
+        if aid
+          author = Author.find_by(ident: aid)
+          work.work_authors.create(author: author, role: role) if author
+        end
       end
 
       add_tags(hash, work, 'genres', 'genre')
@@ -113,7 +128,7 @@ class OpenLibrarySupport
         obj.pages = nil_or_int(hash['number_of_pages'])
         obj.format = hash['physical_format']
         obj.publish_date = nil_or_int(hash.fetch('publish_date', '').split(/[\s,]+/).last)
-        obj.lcc = hash['lc_classifications']
+        obj.lcc = safe_lcc(hash['lc_classifications'])
 
         obj.description = safe_sub(hash, 'description') || safe_sub(hash, 'notes') || ''
       end
@@ -154,9 +169,16 @@ class OpenLibrarySupport
   end
 
   def add_tags hash, obj, hash_key, name
-    hash.fetch(hash_key, []).each do |str|
-      obj.subject_tags.create(name: name, value: str.strip) if str.strip.present?
+    hash.fetch(hash_key, []).each do |entry|
+      str = str_or_value(entry)
+      obj.subject_tags.create(name: name, value: str.strip) if str && str.strip.present?
     end
+  end
+
+  def str_or_value entry
+    return nil unless entry
+    return entry['value'] if entry.is_a?(Hash)
+    entry.to_s
   end
 
   def parse_line line
@@ -165,11 +187,23 @@ class OpenLibrarySupport
   end
 
   def open_library_id str
+    return nil unless str
     str.split('/').last
+  end
+
+  def safe_lcc str
+    return nil unless str
+
+    str = str.first if str.is_a?(Array)
+    return nil unless str.present?
+
+    tmp = str.split(/\s+/)[0]
+    tmp.present? ? tmp[0..13].strip : nil
   end
 
   def nil_or_int str, zero_valid = false
     return nil unless str
+    str = str.first if str.is_a?(Array)
     i = str.to_i
     return zero_valid || i > 0 ? i : nil 
   end
@@ -180,7 +214,5 @@ class OpenLibrarySupport
     return tmp[subkey] if tmp.is_a?(Hash)
     return tmp.to_s
   end
-
-
 end
 
