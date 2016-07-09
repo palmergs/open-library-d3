@@ -10,6 +10,8 @@ gem 'jquery-rails'
 gem 'jbuilder', '~> 2.0'
 gem 'bcrypt', '~> 3.1.7'
 
+gem 'kaminari'
+
 group :doc do
   gem 'sdoc', require: false
 end
