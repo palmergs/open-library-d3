@@ -1,0 +1,12 @@
+<table class="table">
+  <tbody>
+    {{#each model as |author|}}
+      <tr>
+        <td>{{author.name}}</td>
+        <td>{{author.birthDate}}</td>
+        <td>{{author.deathDate}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{outlet}}
