@@ -11,6 +11,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'bcrypt', '~> 3.1.7'
 
 gem 'kaminari'
+gem 'active_model_serializers'
 
 group :doc do
   gem 'sdoc', require: false
