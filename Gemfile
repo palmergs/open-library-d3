@@ -12,6 +12,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'kaminari'
 gem 'active_model_serializers'
+gem 'ember-cli-rails'
 
 group :doc do
   gem 'sdoc', require: false
