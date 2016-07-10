@@ -6,6 +6,11 @@ Rails.application.routes.draw do
       resources :works, only: [ :index, :show ]
       resources :authors, only: [ :index, :show ]
       resources :editions, only: [ :index, :show ]
+
+      namespace :charts do
+        get 'metadata/main', to: 'database_metadata#main_tables'
+        get 'metadata/all', to: 'database_metadata#all_tables'
+      end
     end
   end
 

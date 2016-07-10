@@ -10,18 +10,16 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this._super(...arguments);
-    console.log("In did insert element...");
 
     const width = this.$().width(),
         height = 500,
         radius = Math.min(width, height) / 2;
 
-console.log(width, height, radius);
-console.log(d3);
-console.log(d3.scaleOrdinal);
-
     const color = d3.scaleOrdinal()
         .range([ '#99afff', '#f27993', '#557755', '#7f3f4d', '#992233', '#112288', '#d8adb6', '#d7d8dd', '#338811' ]);
+
+    const label = d3.scaleOrdinal()
+        .range([ '#222222', '#222222', '#ffffff', '#222222', '#222222', '#ffffff', '#222222', '#222222', '#ffffff' ]);
 
     const arc = d3.arc().
         outerRadius(radius - 10).
@@ -38,27 +36,28 @@ console.log(d3.scaleOrdinal);
         append('g').
             attr('transform', 'translate('+ width / 2 +','+ height / 2 +')');
 
-    const data = this.get('data');
+    Ember.$.ajax('/api/v1/charts/metadata/all').done(function(data) {
 
-    data.forEach(function(d, idx) {
-      
-      const g = svg.selectAll('.arc').
-          data(pie(data)).
-          enter().append('g').
-              attr('class', 'arc');
+      console.log("in callback...", data);
 
-      g.append('path').attr('d', arc).style('fill', function(d) { 
-        const c = color(d.data.label);
-        console.log(d, c);
-        return c; 
+
+      data.forEach(function(d, idx) {
+        
+        const g = svg.selectAll('.arc').
+            data(pie(data)).
+            enter().append('g').
+                attr('class', 'arc');
+
+        g.append('path').attr('d', arc).style('fill', function(d) { return color(d.data.label); });
+
+        g.append('text').
+            attr('transform', function(d) { return "translate("+ arc.centroid(d) +')'; }).
+            attr('dy', '.35em').
+            attr('text-anchor', 'middle').
+            attr('fill', function(d) { return label(d.data.label); }).
+            text(function(d) { return d.data.label; });
+
       });
-
-      g.append('text').
-          attr('transform', function(d) { return "translate("+ arc.centroid(d) +')'; }).
-          attr('dy', '.35em').
-          attr('text-anchor', 'middle').
-          text(function(d) { return d.data.label; });
-
     });
   }
 });
