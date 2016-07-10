@@ -1,12 +1,18 @@
-<table class="table">
-  <tbody>
-    {{#each model as |edition|}}
-      <tr>
-        <td>{{edition.title}}</td>
-        <td>{{edition.subtitle}}</td>
-        <td>{{edition.publishDate}}</td>
-      </tr>
-    {{/each}}
-  </tbody>
-</table>
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <table class="table">
+        <tbody>
+          {{#each model as |edition|}}
+            <tr>
+              <td>{{edition.title}}</td>
+              <td>{{edition.subtitle}}</td>
+              <td>{{edition.publishDate}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {{outlet}}
