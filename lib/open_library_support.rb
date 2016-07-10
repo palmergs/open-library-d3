@@ -64,7 +64,7 @@ class OpenLibrarySupport
         obj.title =       hash['title'] || 'unknown'
         obj.subtitle =    hash['subtitle']
         obj.description = safe_sub(hash, 'description') || ''
-        obj.sentence =    hash.fetch('first_sentence', {}).fetch('value', nil)
+        obj.sentence =    safe_sub(hash, 'first_sentence')
         obj.lcc =         safe_lcc(hash['lc_classifications'])
         obj.publish_date = nil_or_int(hash['first_publish_date'])
       end
