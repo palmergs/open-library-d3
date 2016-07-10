@@ -1,1 +1,12 @@
+<table class="table">
+  <tbody>
+    {{#each model as |edition|}}
+      <tr>
+        <td>{{edition.title}}</td>
+        <td>{{edition.subtitle}}</td>
+        <td>{{edition.publishDate}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
 {{outlet}}
