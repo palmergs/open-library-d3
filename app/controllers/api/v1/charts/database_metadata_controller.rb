@@ -28,7 +28,7 @@ class Api::V1::Charts::DatabaseMetadataController < ApplicationController
 
   def tag_tables
 
-    data = Rails.cache.fetch("database-metadata/tag-tables", expires_in: 1.hour do
+    data = Rails.cache.fetch("database-metadata/tag-tables", expires_in: 1.hour) do
       [
         { label: 'Work Tags', value: SubjectTag.where(taggable_type: 'Work').count },
         { label: 'Author Tags', value: SubjectTag.where(taggable_type: 'Author').count },
