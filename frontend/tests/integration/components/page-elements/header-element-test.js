@@ -11,14 +11,5 @@ test('it renders', function(assert) {
 
   this.render(hbs`{{page-elements/header-element}}`);
 
-  assert.equal(this.$().text().trim(), '');
-
-  // Template block usage:
-  this.render(hbs`
-    {{#page-elements/header-element}}
-      template block text
-    {{/page-elements/header-element}}
-  `);
-
-  assert.equal(this.$().text().trim(), 'template block text');
+  assert.equal(this.$().text().trim().replace(/[\s]+/g, ' '), 'Home Works Authors Editions');
 });
