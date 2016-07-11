@@ -10,6 +10,11 @@ Rails.application.routes.draw do
       namespace :charts do
         get 'metadata/main', to: 'database_metadata#main_tables'
         get 'metadata/all', to: 'database_metadata#all_tables'
+        get 'metadata/tag', to: 'database_metadata#tag_tables'
+
+        get 'author/births', to: 'author#birth_timeline'
+        get 'work/published', to: 'work#publish_timeline'
+        get 'edition/published', to: 'edition#publish_timeline'
       end
     end
   end
