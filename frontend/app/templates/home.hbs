@@ -1,7 +1,13 @@
 <div class="container">
   <div class="row">
     <div class="four columns">
-      {{charts.test-chart1}}
+      {{charts.pie-chart path="/api/v1/charts/metadata/main"}}
+    </div>
+    <div class="four columns">
+      {{charts.pie-chart path="/api/v1/charts/metadata/all"}}
+    </div>
+    <div class="four columns">
+      {{charts.pie-chart path="/api/v1/charts/metadata/tag"}}
     </div>
   </div>
 </div>
