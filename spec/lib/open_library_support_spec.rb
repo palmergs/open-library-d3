@@ -57,5 +57,22 @@ RSpec.describe OpenLibrarySupport, as: :lib do
       expect(obj.subject_tags.where(name: 'person').first.value).to eq('Anton Pavlovich Chekhov (1860-1904)')
 
     end
+
+    it 'can handle stupid dates' do
+
+      tests = [
+        [ 'publish_date', 2004, { "publish_date" => "MAY 2004 ISBN: 9780061827389" } ],
+        [ 'birth_date', 1951, { "birth_date" => "10 MAY 1951" } ],
+        [ 'death_date', 2012, { "death_date" => { "key" => "/type/datetime", "value" => "2012-01-12" } } ],
+        [ 'birth_date', 1941, { "birth_date" => "12/12/1941" } ],
+        [ 'publish_date', 1040, { "publish_date" => "ca.1040" } ],
+        [ 'birth_date', 1955, { "birth_date" => "June 12, 1955" } ]
+      ]
+
+      tests.each do |arr|
+        expect(ols.safe_year(arr[2], arr[0])).to eq(arr[1])
+      end
+
+    end
   end
 end

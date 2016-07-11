@@ -66,7 +66,7 @@ class OpenLibrarySupport
         obj.description = safe_sub(hash, 'description') || ''
         obj.sentence =    safe_sub(hash, 'first_sentence')
         obj.lcc =         safe_lcc(hash['lc_classifications'])
-        obj.publish_date = nil_or_int(hash['first_publish_date'])
+        obj.publish_date = safe_year(hash, 'first_publish_date')
       end
 
       hash.fetch('authors', []).each do |entry|
@@ -97,8 +97,8 @@ class OpenLibrarySupport
       author = Author.create(ident: ident) do |obj|
         obj.name = hash['name'] || 'unknown'
         obj.personal_name = hash['personal_name']
-        obj.birth_date =  nil_or_int(hash['birth_date'])
-        obj.death_date =  nil_or_int(hash['death_date'])
+        obj.birth_date =  safe_year(hash, 'birth_date') 
+        obj.death_date =  safe_year(hash, 'death_date')
         obj.description = safe_sub(hash, 'bio') || ''
       end
 
@@ -118,44 +118,54 @@ class OpenLibrarySupport
     end
   end
 
+
+
   def create_edition line
     ident, revision, created_at, hash = parse_line(line)
     if ident && hash
-      edition = Edition.create(ident: ident) do |obj|
-        obj.work = Work.find_by(ident: open_library_id(hash['works'].first['key']))
-        obj.title = hash['title'] || 'unknown'
-        obj.subtitle = hash['subtitle']
-        obj.pages = nil_or_int(hash['number_of_pages'])
-        obj.format = hash['physical_format']
-        obj.publish_date = nil_or_int(hash.fetch('publish_date', '').split(/[\s,]+/).last)
-        obj.lcc = safe_lcc(hash['lc_classifications'])
+      work_hash = hash.fetch('works', []).first
+      work = Work.find_by(ident: open_library_id(work_hash['key'])) if work_hash
+      if work
+        edition = Edition.create(ident: ident, work: work) do |obj|
+          obj.title = hash['title'] || 'unknown'
+          obj.subtitle = hash['subtitle']
+          obj.pages = nil_or_int(hash['number_of_pages'])
+          obj.format = hash['physical_format']
+          obj.publish_date = safe_year(hash, 'publish_date') 
+          obj.lcc = safe_lcc(hash['lc_classifications'])
 
-        obj.description = safe_sub(hash, 'description') || safe_sub(hash, 'notes') || ''
-      end
-
-      hash.fetch('publishers', []).each do |str|
-        edition.edition_publishers.create(name: str)
-      end
-
-      hash.fetch('goodreads', []).each do |str|
-        goodreads_id = str.to_i
-        if goodreads_id > 0
-          edition.external_links.create(name: 'Goodreads', value: "https://www.goodreads.com/book/show/#{ goodreads_id }") 
+          obj.description = safe_sub(hash, 'description') || safe_sub(hash, 'notes') || ''
         end
+
+        #hash.fetch('publishers', []).each do |str|
+        #  if str.present?
+        #    edition.edition_publishers.create(name: str[0..61].strip)
+        #  end
+        #end
+
+        hash.fetch('goodreads', []).each do |str|
+          goodreads_id = str.to_i
+          if goodreads_id > 0
+            edition.external_links.create(name: 'Goodreads', value: "https://www.goodreads.com/book/show/#{ goodreads_id }") 
+          end
+        end
+
+        add_tags(hash, edition, 'genres', 'genre')
+        add_tags(hash, edition, 'subjects', 'subject')
+        add_tags(hash, edition, 'subject_time', 'period')
+        add_tags(hash, edition, 'subject_people', 'person')
+        add_tags(hash, edition, 'subject_places', 'place')
+        add_tags(hash, edition, 'series', 'series')
+        add_tags(hash, edition, 'source_records', 'source')
+        add_tags(hash, edition, 'oclc_numbers', 'oclc')
+        add_tags(hash, edition, 'isbn_13', 'isbn')
+        add_tags(hash, edition, 'isbn_10', 'isbn10')
+
+        edition
+      else
+        nil
       end
 
-      add_tags(hash, edition, 'genres', 'genre')
-      add_tags(hash, edition, 'subjects', 'subject')
-      add_tags(hash, edition, 'subject_time', 'period')
-      add_tags(hash, edition, 'subject_people', 'person')
-      add_tags(hash, edition, 'subject_places', 'place')
-      add_tags(hash, edition, 'series', 'series')
-      add_tags(hash, edition, 'source_records', 'source')
-      add_tags(hash, edition, 'oclc_numbers', 'oclc')
-      add_tags(hash, edition, 'isbn_13', 'isbn')
-      add_tags(hash, edition, 'isbn_10', 'isbn10')
-
-      edition
     else
       nil
     end
@@ -189,6 +199,17 @@ class OpenLibrarySupport
   def open_library_id str
     return nil unless str
     str.split('/').last
+  end
+
+  YEAR_SPLIT_REGEX = /[\s\\\/,._-]+/
+  YEAR_MATCH_REGEX = /[\d]{4}/
+
+  def safe_year hash, key
+    str = str_or_value(hash[key])
+    return nil unless str && str.strip.present?
+
+    years = str.strip.split(YEAR_SPLIT_REGEX).select {|s| s =~ YEAR_MATCH_REGEX }
+    years && years.length > 0 ? years[0].to_i : nil
   end
 
   def safe_lcc str
