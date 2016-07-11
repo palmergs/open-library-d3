@@ -51,7 +51,6 @@ export default Ember.Component.extend({
 
         g.append('text').
           attr('transform', function(d) {
-            const diff = d.endAngle - d.startAngle;
             const center = arc.centroid(d);
             if(labelInSegment(d)) {
               return "translate("+ center +")";
