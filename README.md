@@ -1,6 +1,6 @@
-== Open Library Visualizations with D3.js
+==Open Library Visualizations with D3.js
 
-=== Goals
+===Goals
 
 This project is an experiment in working with large datasets of semi-formatted data
 made available by the [OpenLibrary.org](https://openlibrary.org) project. 
@@ -13,13 +13,13 @@ The project experiments with the following technologies:
 * [Ember.js](https://emberjs.com) (2.5.x) as a single page JavaScript framework
 * [D3.js](https://d3js.org) (4.1.x) for visualizations
 
-=== License
+===License
 
 This project is available under the MIT license. The use of the OpenLibrary.org data files
 [Open Library Data Dumps](https://openlibrary.org/developers/dumps) is subject to the 
 Internet Archive's [Terms of Use](https://archive.org/about/terms.php).
 
-=== TODO
+===TODO
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
