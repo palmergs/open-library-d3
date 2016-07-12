@@ -10,5 +10,23 @@
       {{charts.pie-chart path="/api/v1/charts/metadata/tag"}}
     </div>
   </div>
+  <div class="row">
+    <div class="twelve columns">
+      <label>Timeline of Author Birth Years (by Decade)</label>
+      {{charts.timeline-chart path="/api/v1/charts/author/births"}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <label>Timeline of Work Publication Years (by Decade)</label>
+      {{charts.timeline-chart path="/api/v1/charts/work/published"}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <label>Timeline of Edition Publication Years (by Decade)</label>
+      {{charts.timeline-chart path="/api/v1/charts/edition/published"}}
+    </div>
+  </div>
 </div>
 {{outlet}}

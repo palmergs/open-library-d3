@@ -26,3 +26,15 @@
     color: black;
   }
 }
+
+.timeline-chart {
+  rect {
+    fill: steelblue;
+  }
+
+  text {
+    fill: white;
+    font-size: 10px;
+    text-anchor: middle;
+  }
+}
