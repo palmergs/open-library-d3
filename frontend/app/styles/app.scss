@@ -27,14 +27,26 @@
   }
 }
 
+label {
+  font-weight: normal;
+  font-size: 12px;
+}
+
+label.centered {
+  text-align: center;
+}
+
 .timeline-chart {
   rect {
     fill: steelblue;
   }
+}
 
-  text {
-    fill: white;
-    font-size: 10px;
-    text-anchor: middle;
+.axis {
+  font-size: 9px;
+  path, line {
+    fill: none;
+    stroke: #222;
+    shape-rendering: crispEdges;
   }
 }

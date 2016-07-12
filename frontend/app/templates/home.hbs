@@ -2,30 +2,33 @@
   <div class="row">
     <div class="four columns">
       {{charts.pie-chart path="/api/v1/charts/metadata/main"}}
+      <label class="centered">Relative Number of Table Rows (main tables)</label>
     </div>
     <div class="four columns">
       {{charts.pie-chart path="/api/v1/charts/metadata/all"}}
+      <label class="centered">Relative Number of Table Rows (all tables)</label>
     </div>
     <div class="four columns">
       {{charts.pie-chart path="/api/v1/charts/metadata/tag"}}
+      <label class="centered">Relative Number of Subject Tags</label>
     </div>
   </div>
   <div class="row">
     <div class="twelve columns">
-      <label>Timeline of Author Birth Years (by Decade)</label>
       {{charts.timeline-chart path="/api/v1/charts/author/births"}}
+      <label class="centered">Timeline of Author Birth Years (by Decade)</label>
     </div>
   </div>
   <div class="row">
     <div class="twelve columns">
-      <label>Timeline of Work Publication Years (by Decade)</label>
       {{charts.timeline-chart path="/api/v1/charts/work/published"}}
+      <label class="centered">Timeline of Work Publication Years (by Decade)</label>
     </div>
   </div>
   <div class="row">
     <div class="twelve columns">
-      <label>Timeline of Edition Publication Years (by Decade)</label>
       {{charts.timeline-chart path="/api/v1/charts/edition/published"}}
+      <label class="centered">Timeline of Edition Publication Years (by Decade)</label>
     </div>
   </div>
 </div>
