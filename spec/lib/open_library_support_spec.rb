@@ -73,6 +73,8 @@ RSpec.describe OpenLibrarySupport, as: :lib do
         expect(ols.safe_year(arr[2], arr[0])).to eq(arr[1])
       end
 
+      expect(ols.safe_year({ "publish_date" => "11110002834756" }, 'publish_date')).to be_nil
+
     end
   end
 end

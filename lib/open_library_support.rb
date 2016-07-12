@@ -203,13 +203,19 @@ class OpenLibrarySupport
 
   YEAR_SPLIT_REGEX = /[\s\\\/,._-]+/
   YEAR_MATCH_REGEX = /[\d]{4}/
+  CURRENT_YEAR = Time.now.year
 
   def safe_year hash, key
     str = str_or_value(hash[key])
     return nil unless str && str.strip.present?
 
     years = str.strip.split(YEAR_SPLIT_REGEX).select {|s| s =~ YEAR_MATCH_REGEX }
-    years && years.length > 0 ? years[0].to_i : nil
+    if years && years.length > 0 
+      year = years[0].to_i
+      year > CURRENT_YEAR ? nil : year
+    else
+      nil
+    end
   end
 
   def safe_lcc str
