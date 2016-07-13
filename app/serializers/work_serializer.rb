@@ -3,9 +3,9 @@ class WorkSerializer < ActiveModel::Serializer
       :title, 
       :subtitle, 
       :lcc, 
-      :editions_count, 
       :publish_date, 
-      :sentence, 
+      :excerpt, 
       :description, 
-      :created_at
+      :created_at,
+      :work_authors_count
 end
