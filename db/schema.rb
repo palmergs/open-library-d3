@@ -11,61 +11,62 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160713123219) do
+ActiveRecord::Schema.define(version: 20160713195208) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "authors", force: :cascade do |t|
-    t.string   "ident",         limit: 15
-    t.string   "name",                                  null: false
-    t.string   "personal_name"
+    t.string   "ident",       limit: 15
+    t.string   "name",                                null: false
     t.integer  "birth_date"
     t.integer  "death_date"
-    t.string   "death_place"
-    t.text     "description",              default: "", null: false
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.text     "description",            default: "", null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
-  add_index "authors", ["ident"], name: "index_authors_on_ident", using: :btree
+  add_index "authors", ["birth_date"], name: "index_authors_on_birth_date", using: :btree
+  add_index "authors", ["death_date"], name: "index_authors_on_death_date", using: :btree
+  add_index "authors", ["ident"], name: "index_authors_on_ident", unique: true, using: :btree
 
-  create_table "edition_publishers", force: :cascade do |t|
-    t.string   "name",       limit: 63, null: false
-    t.integer  "edition_id",            null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+  create_table "edition_authors", force: :cascade do |t|
+    t.integer "edition_id",             null: false
+    t.integer "author_id",              null: false
+    t.integer "rel_order",  default: 0, null: false
   end
 
-  add_index "edition_publishers", ["edition_id"], name: "index_edition_publishers_on_edition_id", using: :btree
+  add_index "edition_authors", ["author_id"], name: "index_edition_authors_on_author_id", using: :btree
+  add_index "edition_authors", ["edition_id", "author_id"], name: "index_edition_authors_on_edition_id_and_author_id", unique: true, using: :btree
+  add_index "edition_authors", ["edition_id"], name: "index_edition_authors_on_edition_id", using: :btree
 
   create_table "editions", force: :cascade do |t|
-    t.integer  "work_id",                                          null: false
-    t.integer  "edition_publishers_count",            default: 0,  null: false
-    t.string   "ident",                    limit: 15
-    t.string   "title",                                            null: false
+    t.string   "ident",                 limit: 15
+    t.string   "title",                                         null: false
     t.string   "subtitle"
-    t.string   "lcc",                      limit: 15
+    t.text     "statement"
+    t.string   "lcc",                   limit: 15
     t.integer  "pages"
-    t.integer  "copyright_date"
     t.integer  "publish_date"
-    t.integer  "publish_country"
     t.string   "format"
     t.string   "series"
-    t.text     "first_sentence"
-    t.text     "description",                         default: "", null: false
-    t.datetime "created_at",                                       null: false
-    t.datetime "updated_at",                                       null: false
+    t.text     "excerpt"
+    t.text     "description",                      default: "", null: false
+    t.integer  "edition_authors_count",            default: 0,  null: false
+    t.integer  "work_editions_count",              default: 0,  null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
   end
 
-  add_index "editions", ["ident"], name: "index_editions_on_ident", using: :btree
+  add_index "editions", ["edition_authors_count"], name: "index_editions_on_edition_authors_count", using: :btree
+  add_index "editions", ["ident"], name: "index_editions_on_ident", unique: true, using: :btree
   add_index "editions", ["lcc"], name: "index_editions_on_lcc", using: :btree
-  add_index "editions", ["work_id"], name: "index_editions_on_work_id", using: :btree
+  add_index "editions", ["work_editions_count"], name: "index_editions_on_work_editions_count", using: :btree
 
   create_table "external_links", force: :cascade do |t|
     t.integer  "linkable_id",              null: false
-    t.string   "linkable_type", limit: 63, null: false
-    t.string   "name",                     null: false
+    t.string   "linkable_type", limit: 24, null: false
+    t.string   "name",          limit: 24, null: false
     t.string   "value",                    null: false
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
@@ -75,8 +76,8 @@ ActiveRecord::Schema.define(version: 20160713123219) do
 
   create_table "subject_tags", force: :cascade do |t|
     t.integer  "taggable_id",              null: false
-    t.string   "taggable_type", limit: 63, null: false
-    t.string   "name",                     null: false
+    t.string   "taggable_type", limit: 24, null: false
+    t.string   "name",          limit: 24, null: false
     t.string   "value",                    null: false
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
@@ -97,30 +98,41 @@ ActiveRecord::Schema.define(version: 20160713123219) do
   add_index "tokens", ["year"], name: "index_tokens_on_year", using: :btree
 
   create_table "work_authors", force: :cascade do |t|
-    t.integer "work_id",                                 null: false
-    t.integer "author_id",                               null: false
-    t.integer "rel_order",            default: 0,        null: false
-    t.string  "role",      limit: 24, default: "author", null: false
+    t.integer "work_id",               null: false
+    t.integer "author_id",             null: false
+    t.integer "rel_order", default: 0, null: false
   end
 
   add_index "work_authors", ["author_id"], name: "index_work_authors_on_author_id", using: :btree
+  add_index "work_authors", ["work_id", "author_id"], name: "index_work_authors_on_work_id_and_author_id", unique: true, using: :btree
   add_index "work_authors", ["work_id"], name: "index_work_authors_on_work_id", using: :btree
 
-  create_table "works", force: :cascade do |t|
-    t.string   "ident",          limit: 15
-    t.string   "title",                                  null: false
-    t.string   "subtitle"
-    t.string   "lcc",            limit: 15
-    t.integer  "editions_count",            default: 0,  null: false
-    t.integer  "publish_date"
-    t.text     "sentence"
-    t.text     "description",               default: "", null: false
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+  create_table "work_editions", force: :cascade do |t|
+    t.integer "work_id",                null: false
+    t.integer "edition_id",             null: false
+    t.integer "rel_order",  default: 0, null: false
   end
 
-  add_index "works", ["ident"], name: "index_works_on_ident", using: :btree
+  add_index "work_editions", ["edition_id"], name: "index_work_editions_on_edition_id", using: :btree
+  add_index "work_editions", ["work_id", "edition_id"], name: "index_work_editions_on_work_id_and_edition_id", unique: true, using: :btree
+  add_index "work_editions", ["work_id"], name: "index_work_editions_on_work_id", using: :btree
+
+  create_table "works", force: :cascade do |t|
+    t.string   "ident",              limit: 15
+    t.string   "title",                                      null: false
+    t.string   "subtitle"
+    t.string   "lcc",                limit: 15
+    t.integer  "publish_date"
+    t.text     "excerpt"
+    t.text     "description",                   default: "", null: false
+    t.integer  "work_authors_count",            default: 0,  null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+  end
+
+  add_index "works", ["ident"], name: "index_works_on_ident", unique: true, using: :btree
   add_index "works", ["lcc"], name: "index_works_on_lcc", using: :btree
   add_index "works", ["publish_date"], name: "index_works_on_publish_date", using: :btree
+  add_index "works", ["work_authors_count"], name: "index_works_on_work_authors_count", using: :btree
 
 end
