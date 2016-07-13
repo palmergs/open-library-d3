@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :edition do
-    work
-    title { self.work.title }
-    subtitle { self.work.subtitle }
+    ident { Faker::Code.isbn }
+    title { Faker::Book.title }
+    subtitle { Faker::Book.genre }
   end
 end
