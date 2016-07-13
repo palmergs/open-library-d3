@@ -61,4 +61,17 @@ namespace :etl do
 
     p ".done"
   end
+
+  desc "build author tokens" 
+  task build_author_tokens: :environment do 
+  
+    require 'token_support'
+
+    ts = TokenSupport.new
+    p "token support instantiated..."
+    p "... building authors"
+    ts.process_authors
+    p ".done"
+
+  end
 end
