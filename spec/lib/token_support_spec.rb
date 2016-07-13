@@ -36,12 +36,11 @@ RSpec.describe TokenSupport, as: :lib do
       author = create(:author, birth_date: 1922, death_date: 1992, description: Faker::Hipster.paragraph)
       ts.process_authors
       
-
     end
 
     it 'can generate tokens from works' do
 
-      work = create(:work, publish_date: 1987, sentence: Faker::Hipster.sentence, description: Faker::Hipster.paragraph)
+      work = create(:work, publish_date: 1987, excerpt: Faker::Hipster.sentence, description: Faker::Hipster.paragraph)
       ts.process_works
 
     end
@@ -51,7 +50,6 @@ RSpec.describe TokenSupport, as: :lib do
       10.times { create(:edition, publish_date: 1934, description: Faker::Hipster.paragraph) }
       ts.process_editions
 
-      pp Token.order(count: :asc).select(:token, :count).all
     end
   end
 end

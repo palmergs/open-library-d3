@@ -2,193 +2,129 @@ require 'counter'
 
 class OpenLibrarySupport 
 
-  attr_reader :authors_path, :works_path, :editions_path, :only
+  attr_reader :base_path
+  
+  BATCH_SIZE = 1000
 
-  def initialize path, only: []
-    entries = Dir.glob(File.join(path, "*.txt"))
-    @authors_path = entries.select {|s| s =~ /authors/ }.first
-    @works_path = entries.select {|s| s =~ /works/ }.first
-    @editions_path = entries.select {|s| s =~ /editions/ }.first
-    @only = only || []
-
-    raise "All file paths not found" unless @authors_path && @works_path && @editions_path
+  def initialize path
+    @base_path = path
   end
 
-
-  def read_authors
-    if only.empty? || only.include?(:authors) 
-      Counter.with_count do |cnt|
-        File.open(authors_path) do |f|
-          while line = f.gets
-            cnt + (create_author(line) ? 1 : 0)
-          end
-        end
-      end
-    else
-      Author.count
-    end
-  end
-
-  def read_works
-    if only.empty? || only.include?(:works)
-      Counter.with_count do |cnt|
-        File.open(works_path) do |f|
-          while line = f.gets
-            cnt + (create_work(line) ? 1 : 0)
-          end
-        end
-      end
-    else
-      Work.count
-    end
-  end
-
-  def read_editions
-    if only.empty? || only.include?(:editions)
-      Counter.with_count do |cnt|
-        File.open(editions_path) do |f|
-          while line = f.gets
-            cnt + (create_edition(line) ? 1 : 0)
-          end
-        end
-      end
-    else
-      Edition.count
-    end
-  end
-
-  def create_work line
-    ident, revision, created_at, hash = parse_line(line)
-    if ident.present? && hash
-      work = Work.create(ident: ident) do |obj|
-        obj.title =       hash['title'] || 'unknown'
-        obj.subtitle =    hash['subtitle']
-        obj.description = safe_sub(hash, 'description') || ''
-        obj.sentence =    safe_sub(hash, 'first_sentence')
-        obj.lcc =         safe_lcc(hash['lc_classifications'])
-        obj.publish_date = safe_year(hash, 'first_publish_date')
-      end
-
-      hash.fetch('authors', []).each do |entry|
-        aid = open_library_id(entry.fetch('author', {})['key'] || entry['author'].to_s) 
-        role = 'author'
-        if aid
-          author = Author.find_by(ident: aid)
-          work.work_authors.create(author: author, role: role) if author
+  def read_file path
+    sum, cnt = 0, 0
+    File.open(path) do |f|
+      while line = f.gets
+        cnt += 1
+        sum += 1
+        yield(line)
+        if cnt > BATCH_SIZE
+          save_all
+          cnt = 0
         end
       end
 
-      add_tags(hash, work, 'genres', 'genre')
-      add_tags(hash, work, 'subjects', 'subject')
-      add_tags(hash, work, 'subject_time', 'period')
-      add_tags(hash, work, 'subject_people', 'person')
-      add_tags(hash, work, 'subject_places', 'place')
-      add_tags(hash, work, 'series', 'series')
-
-      work
-    else
-      nil
+      if cnt > 0
+        save_all
+        cnt = 0
+      end
     end
+    sum
   end
 
-  def create_author line
-    ident, revision, created_at, hash = parse_line(line)
-    if ident.present? && hash
-      author = Author.create(ident: ident) do |obj|
-        obj.name = hash['name'] || 'unknown'
-        obj.personal_name = hash['personal_name']
-        obj.birth_date =  safe_year(hash, 'birth_date') 
-        obj.death_date =  safe_year(hash, 'death_date')
-        obj.description = safe_sub(hash, 'bio') || ''
-      end
-
-      if hash['website'].present?
-        author.external_links.create(name: hash['website'], value: hash['website'])
-      end
-
-      hash.fetch('links', []).each do |link|
-        author.external_links.create(name: link['title'], value: link['url'])
-      end
-
-      add_tag(hash, author, 'location', 'location')
-
-      author
-    else
-      nil
-    end
+  def save_all
+    raise "This must be defined in a subclass"
   end
 
+  def save_links clazz, links
+    cnt = 0
+    links.each_pair do |ident, new_links|
+      parent = clazz.find_by(ident: ident)
+      if parent
+        inserts = []
+        new_links.each do |link|
+          arr = [ parent.id, 
+                  str_val(clazz.name), 
+                  str_val(link[:name][0..23]), 
+                  str_val(link[:value]),
+                  str_val(DateTime.now.to_s),
+                  str_val(DateTime.now.to_s) ]
+          inserts << "(#{ arr.join(', ') })"
+        end
+        
+        if inserts.count > 0
+          cnt += inserts.count
+          sql = "INSERT INTO external_links (linkable_id, linkable_type, name, value, created_at, updated_at) VALUES #{ inserts.join(', ') }"
+          SubjectTag.connection.execute( sql )
+        end
+      end
+    end
+    pp ". inserted #{ cnt } #{ clazz.name.downcase } links"
+    cnt
+  end
 
-
-  def create_edition line
-    ident, revision, created_at, hash = parse_line(line)
-    if ident && hash
-      work_hash = hash.fetch('works', []).first
-      work = Work.find_by(ident: open_library_id(work_hash['key'])) if work_hash
-      if work
-        edition = Edition.create(ident: ident, work: work) do |obj|
-          obj.title = hash['title'] || 'unknown'
-          obj.subtitle = hash['subtitle']
-          obj.pages = nil_or_int(hash['number_of_pages'])
-          obj.format = hash['physical_format']
-          obj.publish_date = safe_year(hash, 'publish_date') 
-          obj.lcc = safe_lcc(hash['lc_classifications'])
-
-          obj.description = safe_sub(hash, 'description') || safe_sub(hash, 'notes') || ''
+  def save_tags clazz, tags
+    cnt = 0
+    tags.each_pair do |ident, new_tags|
+      parent = clazz.find_by(ident: ident)
+      if parent
+        inserts = []
+        new_tags.each do |tag|
+          arr = [ parent.id, 
+                  str_val(clazz.name), 
+                  str_val(tag[:name][0..23]), 
+                  str_val(tag[:value]),
+                  str_val(DateTime.now.to_s),
+                  str_val(DateTime.now.to_s) ]
+          inserts << "(#{ arr.join(', ') })"
         end
 
-        #hash.fetch('publishers', []).each do |str|
-        #  if str.present?
-        #    edition.edition_publishers.create(name: str[0..61].strip)
-        #  end
-        #end
-
-        hash.fetch('goodreads', []).each do |str|
-          goodreads_id = str.to_i
-          if goodreads_id > 0
-            edition.external_links.create(name: 'Goodreads', value: "https://www.goodreads.com/book/show/#{ goodreads_id }") 
-          end
+        if inserts.count > 0
+          cnt += inserts.count
+          sql = "INSERT INTO subject_tags (taggable_id, taggable_type, name, value, created_at, updated_at) VALUES #{ inserts.join(', ') }"
+          SubjectTag.connection.execute( sql )
         end
-
-        add_tags(hash, edition, 'genres', 'genre')
-        add_tags(hash, edition, 'subjects', 'subject')
-        add_tags(hash, edition, 'subject_time', 'period')
-        add_tags(hash, edition, 'subject_people', 'person')
-        add_tags(hash, edition, 'subject_places', 'place')
-        add_tags(hash, edition, 'series', 'series')
-        add_tags(hash, edition, 'source_records', 'source')
-        add_tags(hash, edition, 'oclc_numbers', 'oclc')
-        add_tags(hash, edition, 'isbn_13', 'isbn')
-        add_tags(hash, edition, 'isbn_10', 'isbn10')
-
-        edition
-      else
-        nil
       end
+    end
+    pp ". inserted #{ cnt } #{ clazz.name.downcase } links"
+    cnt
+  end
 
-    else
-      nil
+  def str_val str
+    return 'NULL' unless str
+    "'#{ str.gsub("'", "''") }'"
+  end
+
+  def num_val num
+    return 'NULL' unless num
+    num.to_s
+  end
+
+  def add_tag array, hash, key, category = nil
+    return unless hash && hash[key]
+
+    category ||= key
+    value = str_or_value(hash[key])
+    array << { name: category, value: value } if value.present?
+  end
+
+  def add_tags array, hash, key, category = nil
+    return unless hash && hash[key] 
+
+    category ||= key
+    arr = hash[key]
+    if arr.is_a?(Array)
+      arr.each do |entry|
+        value = str_or_value(entry)
+        array << { name: category, value: value } if value.present?
+      end
     end
   end
 
-  def add_tag hash, obj, hash_key, name
-    val = hash[hash_key]
-    if val.is_a?(String) && val.strip.present?
-      obj.subject_tags.create(name: name, value: val.strip)
-    end
-  end
-
-  def add_tags hash, obj, hash_key, name
-    hash.fetch(hash_key, []).each do |entry|
-      str = str_or_value(entry)
-      obj.subject_tags.create(name: name, value: str.strip) if str && str.strip.present?
-    end
-  end
-
-  def str_or_value entry
+  def str_or_value entry, key = 'value'
     return nil unless entry
-    return entry['value'] if entry.is_a?(Hash)
-    entry.to_s
+
+    str = entry.is_a?(Hash) ? entry[key] : entry
+    (str && str.to_s.strip.present?) ? str.to_s.strip : nil
   end
 
   def parse_line line
@@ -205,11 +141,17 @@ class OpenLibrarySupport
   YEAR_MATCH_REGEX = /[\d]{4}/
   CURRENT_YEAR = Time.now.year
 
+  # note: currently can not handle BCE year values
   def safe_year hash, key
     str = str_or_value(hash[key])
     return nil unless str && str.strip.present?
 
-    years = str.strip.split(YEAR_SPLIT_REGEX).select {|s| s =~ YEAR_MATCH_REGEX }
+    # allow a single integer to go through
+    str = str.strip
+    return str.to_i if str =~ /^[\d]{1,4}$/
+
+    # otherwise assume that a 4 digit integer from 1000 to 2016 is the year
+    years = str.split(YEAR_SPLIT_REGEX).select {|s| s =~ YEAR_MATCH_REGEX }
     if years && years.length > 0 
       year = years[0].to_i
       year > CURRENT_YEAR ? nil : year
@@ -225,7 +167,7 @@ class OpenLibrarySupport
     return nil unless str.present?
 
     tmp = str.split(/\s+/)[0]
-    tmp.present? ? tmp[0..13].strip : nil
+    tmp.present? ? tmp.strip[0..13] : nil
   end
 
   def nil_or_int str, zero_valid = false
