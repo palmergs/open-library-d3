@@ -2,8 +2,8 @@ class CreateExternalLinks < ActiveRecord::Migration
   def change
     create_table :external_links do |t|
       t.integer :linkable_id, null: false
-      t.string :linkable_type, limit: 63, null: false
-      t.string :name, null: false
+      t.string :linkable_type, limit: 24, null: false
+      t.string :name, limit: 24, null: false
       t.string :value, null: false
 
       t.timestamps null: false
