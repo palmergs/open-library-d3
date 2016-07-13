@@ -15,7 +15,7 @@ gem 'active_model_serializers'
 gem 'ember-cli-rails'
 
 # For converting Unicode characters to ASCII for comparison
-# gem 'unidecoder'
+gem 'unidecoder'
 
 group :doc do
   gem 'sdoc', require: false
