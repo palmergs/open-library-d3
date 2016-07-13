@@ -1,77 +1,107 @@
-require 'open_library_support'
+require 'author_support'
+require 'work_support'
+require 'edition_support'
+require 'token_support'
+
 
 namespace :etl do
 
-  desc "Load OpenLibrary data files (WARNING: not idempotent)"
-  task :load_data, [ :path ] => :environment do |t, args|
+  desc "load all open library data files (WARNING: not idempotent)"
+  task :load_all, [ :path ] => :environment do |t, args|
 
     raise "path to folder is requires" unless args.path.present?
     raise "expected #{ args.path } to be a folder" unless File.directory?(args.path)
     raise "#{ args.path } is not readable" unless File.readable?(args.path)
 
-    p "reading data from #{ args.path }"
-    ols = OpenLibrarySupport.new(args.path)
-    authors = ols.read_authors
-    p "... found #{ authors } author entries"
-
-    works = ols.read_works
-    p "...found #{ works } work entries"
-
-    editions = ols.read_editions
-    p "... found #{ editions } edition entries"
-
-    p ".done"
+    p "reading data from #{ args.path }..."
+    read_authors(args.path)
+    read_works(args.path)
+    read_editions(args.path)
+    read_tokens
 
   end
 
+  desc "load work data file (WARNING: not idempotent)"
   task :load_works, [ :path ] => :environment do |t, args|
+
     raise "path to folder is requires" unless args.path.present?
     raise "expected #{ args.path } to be a folder" unless File.directory?(args.path)
     raise "#{ args.path } is not readable" unless File.readable?(args.path)
 
-    p "reading data from #{ args.path }"
-    ols = OpenLibrarySupport.new(args.path, only: [ :works ])
-    authors = ols.read_authors
-    p "... found #{ authors } author entries"
-
-    works = ols.read_works
-    p "...found #{ works } work entries"
-
-    editions = ols.read_editions
-    p "... found #{ editions } edition entries"
-
-    p ".done"
+    p "reading work data from #{ args.path }..."
+    read_works(args.path)
   end
 
+  desc "load edition data file (WARNING: not idempotent)"
   task :load_editions, [ :path ] => :environment do |t, args|
+
     raise "path to folder is requires" unless args.path.present?
     raise "expected #{ args.path } to be a folder" unless File.directory?(args.path)
     raise "#{ args.path } is not readable" unless File.readable?(args.path)
 
-    p "reading data from #{ args.path }"
-    ols = OpenLibrarySupport.new(args.path, only: [ :editions ])
-    authors = ols.read_authors
-    p "... found #{ authors } author entries"
-
-    works = ols.read_works
-    p "...found #{ works } work entries"
-
-    editions = ols.read_editions
-    p "... found #{ editions } edition entries"
-
-    p ".done"
+    p "reading edition data from #{ args.path }..."
+    read_editions(args.path)
   end
 
-  desc "build author tokens" 
-  task build_author_tokens: :environment do 
-  
-    require 'token_support'
+  desc "generate token data"
+  task :generate_tokens do 
+    p "generating tokens..."
+    read_tokens
+  end
 
+  def read_authors path
+    p ". deleting author data"
+    SubjectTag.where(taggable_type: 'Author').delete_all
+    ExternalLink.where(linkable_type: 'Author').delete_all
+    WorkAuthor.delete_all
+    EditionAuthor.delete_all
+    p ". done deleting author data"
+
+    p ". reading author data"
+    as = AuthorSupport.new(path)
+    as.read
+    p ". done reading authors"
+  end
+
+  def read_works path
+    p ". deleting work data"
+    SubjectTag.where(taggable_type: 'Work').delete_all
+    ExternalLink.where(linkable_type: 'Work').delete_all
+    WorkAuthor.delete_all
+    WorkEdition.delete_all
+    p ". done deleting work data"
+
+    p ". reading work data"
+    ws = WorkSupport.new(path)
+    ws.read
+    p ". done reading works"
+  end
+
+
+  def read_editions path
+    p ". deleting edition data"
+    SubjectTag.where(taggable_type: 'Edition').delete_all
+    ExternalLink.where(linkable_type: 'Edition').delete_all
+    EditionAuthor.delete_all
+    WorkEdition.delete_all
+    p ". done deleting author data"
+
+    p ". reading author data"
+    es = EditionSupport.new(path)
+    es.read
+    p ". done reading editions"
+  end
+
+  def read_tokens
+    p ". deleting token data"
+    Token.delete_all
+    p ". done deleting token data"
+
+    p ". generating tokens"
     ts = TokenSupport.new
-    p "token support instantiated..."
-    p "... building authors"
     ts.process_authors
-    p ".done"
-
+    ts.process_works
+    ts.process_editions
+    p ". done generating tokens"
   end
 end

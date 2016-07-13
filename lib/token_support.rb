@@ -6,6 +6,12 @@ class TokenSupport
   DESCRIPTION = 2
   CONTENT = 3
 
+  def process_all
+    process_authors
+    process_works
+    process_editions
+  end
+
   def process_authors
 
     process(Author, :birth_date, :name, IDENTIFIER)
@@ -17,16 +23,16 @@ class TokenSupport
 
     process(Work, :publish_date, [:title, :subtitle], IDENTIFIER)
     process(Work, :publish_date, :description, DESCRIPTION)
-    process(Work, :publish_date, :sentence, CONTENT)
+    process(Work, :publish_date, :excerpt, CONTENT)
 
   end
 
 
   def process_editions
 
-    process(Edition, :publish_date, [ :title, :subtitle, :series ], IDENTIFIER)
-    process(Edition, :publish_date, [ :description, :publish_country ], DESCRIPTION)
-    process(Edition, :publish_date, :first_sentence, CONTENT)
+    process(Edition, :publish_date, [ :title, :subtitle, :statement, :series ], IDENTIFIER)
+    process(Edition, :publish_date, :description, DESCRIPTION)
+    process(Edition, :publish_date, :excerpt, CONTENT)
 
   end
 
@@ -39,11 +45,11 @@ class TokenSupport
           count = clazz.where(date_field.to_sym => year).count
           if count > 0
             page = 0
-            page_size = 1000
+            page_size = 2_000
             begin
               hash = build_hash(clazz, page, page_size, date_field, text_fields, year)
               inserted = insert_all(clazz, category, year, hash)
-pp "#{ year }. inserted #{ inserted } tokens for #{ clazz.name } (#{ category })"
+              pp ". #{ year }: inserted #{ inserted } tokens for #{ clazz.name } (#{ category })"
             end while ((page += 1) * page_size) < count
           end
         end
@@ -76,7 +82,9 @@ pp "#{ year }. inserted #{ inserted } tokens for #{ clazz.name } (#{ category })
     hash
   end
 
-  STOP_WORDS = Set.new([ 'the', 'and', 'in', 'be', 'to', 'of', 'it', 'that', 'have', 'on', 'at', 'or' ])
+  STOP_WORDS = Set.new([ 'the', 'and', 'in', 'be', 'to', 'of', 'it', 
+                         'that', 'have', 'on', 'at', 'or', 'el', 'la', 
+                         'en', 'un', 'de' ])
 
   def insert_all clazz, category, year, hash
     arr = []
