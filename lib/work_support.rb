@@ -31,7 +31,7 @@ class WorkSupport < OpenLibrarySupport
     ident, revision, created_at, hash = parse_line(line)
     return if unsaved_works[ident]
 
-    authors = extract_authors(hash)
+    authors = Set.new(extract_authors(hash))
     unsaved_works[ident] = {
       ident: ident,
       title: hash['title'] || 'unknown',
@@ -49,7 +49,13 @@ class WorkSupport < OpenLibrarySupport
 
   def extract_authors hash
     arr = hash.fetch('authors', [])
-    arr.map {|entry| open_library_id(safe_sub(entry['author'], 'key')) }.compact
+    arr.map do |entry| 
+      if entry['author']
+        open_library_id(safe_sub(entry['author'], 'key')) 
+      else
+        open_library_id(entry['key'])
+      end
+    end.compact
   end
 
   def extract_excerpt hash
