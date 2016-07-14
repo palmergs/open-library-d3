@@ -191,6 +191,8 @@ class OpenLibrarySupport
   end
 
   def safe_sub hash, key, subkey = 'value'
+    return nil unless hash
+
     tmp = hash[key]
     return nil unless tmp
     return tmp[subkey] if tmp.is_a?(Hash)
