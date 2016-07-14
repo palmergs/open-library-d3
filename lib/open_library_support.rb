@@ -35,14 +35,25 @@ class OpenLibrarySupport
     raise "This must be defined in a subclass"
   end
 
+  def idents_to_ids clazz, hash_or_array
+    i2i = {}
+    keys = hash_or_array.is_a?(Hash) ? hash_or_array.keys : hash_or_array
+    clazz.where(ident: keys).select(:ident, :id).each do |obj|
+      i2i[obj.ident] = obj.id
+    end
+    i2i
+  end
+
   def save_links clazz, links
+    i2i = idents_to_ids(clazz, links)
+
     cnt = 0
     links.each_pair do |ident, new_links|
-      parent = clazz.find_by(ident: ident)
-      if parent
+      parent_id = i2i[ident]
+      if parent_id
         inserts = []
         new_links.each do |link|
-          arr = [ parent.id, 
+          arr = [ parent_id, 
                   str_val(clazz.name), 
                   str_val(link[:name][0..23]), 
                   str_val(link[:value]),
@@ -63,13 +74,15 @@ class OpenLibrarySupport
   end
 
   def save_tags clazz, tags
+    i2i = idents_to_ids(clazz, tags)
+
     cnt = 0
     tags.each_pair do |ident, new_tags|
-      parent = clazz.find_by(ident: ident)
-      if parent
+      parent_id = i2i[ident]
+      if parent_id
         inserts = []
         new_tags.each do |tag|
-          arr = [ parent.id, 
+          arr = [ parent_id, 
                   str_val(clazz.name), 
                   str_val(tag[:name][0..23]), 
                   str_val(tag[:value]),

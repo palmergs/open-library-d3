@@ -49,24 +49,25 @@ class WorkSupport < OpenLibrarySupport
 
   def extract_authors hash
     arr = hash.fetch('authors', [])
-    return [ open_library_id(arr) ] if arr.is_a?(String)
-
-    arr.map {|entry| str_or_value(entry, 'author') }
+    arr.map {|entry| open_library_id(safe_sub(entry['author'], 'key')) }.compact
   end
 
   def extract_excerpt hash
 
     excerpts = hash.fetch('excerpts', [])
-    excerpts = excerpts.select do |entry|
-      entry['excerpt']
-    end.map do |entry|
-      comment = entry['comment']
-      text = entry['excerpt']
-      comment.present? ? "#{ text }\n[#{ comment }]" : text.strip
-    end
+    excerpts = excerpts.select {|entry| entry['excerpt'].present? }
+    excerpts = excerpts.map {|entry| str_or_value(entry['excerpt']) }
 
     sentence = str_or_value(hash['first_sentence'])
-    ([ sentence ] + excerpts).compact.join("\n\n")
+
+    if sentence && excerpts.count > 0
+      excerpts << sentence unless sentence == excerpts.first
+      excerpts.join("\n\n")
+    elsif sentence
+      sentence
+    else
+      excerpts.join("\n\n")
+    end
   end
 
   def build_tags ident, hash
@@ -76,7 +77,7 @@ class WorkSupport < OpenLibrarySupport
     add_tags(unsaved_work_tags[ident], hash, 'subject_people', 'person')
     add_tags(unsaved_work_tags[ident], hash, 'subject_places', 'place')
 
-    add_tag(unsaved_work_tags[ident], hash, 'dewey_number', 'dewey')
+    add_tags(unsaved_work_tags[ident], hash, 'dewey_number', 'dewey')
   end
 
   def build_links ident, hash
@@ -130,14 +131,16 @@ class WorkSupport < OpenLibrarySupport
   end
 
   def save_work_authors
+    i2i = idents_to_ids(Work, unsaved_works)
+
     work_authors = []
     unsaved_works.each_pair do |ident, hash|
-      work = Work.find_by(ident: ident)
-      if work
+      work_id = i2i[ident]
+      if work_id
         hash.fetch(:authors, []).each do |author_ident|
           if author_ident
             author = Author.find_by(ident: author_ident)
-            work_authors << "(#{ work.id }, #{ author.id })" if author
+            work_authors << "(#{ work_id }, #{ author.id })" if author
           end
         end
       end

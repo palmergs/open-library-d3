@@ -55,16 +55,12 @@ class EditionSupport < OpenLibrarySupport
 
   def extract_works hash
     arr = hash.fetch('works', [])
-    return [ open_library_id(arr) ] if arr.is_a?(String)
-
-    arr.map {|entry| str_or_value(entry, 'work') }
+    arr.map {|entry| open_library_id(entry['key']) }.compact
   end
 
   def extract_authors hash
     arr = hash.fetch('authors', [])
-    return [ open_library_id(arr) ] if arr.is_a?(String)
-
-    arr.map {|entry| str_or_value(entry, 'author') }
+    arr.map {|entry| open_library_id(entry['key']) }.compact
   end
 
   def build_tags ident, hash
@@ -78,6 +74,7 @@ class EditionSupport < OpenLibrarySupport
     add_tags(unsaved_edition_tags[ident], hash, 'oclc_numbers', 'oclc')
     add_tags(unsaved_edition_tags[ident], hash, 'isbn_13', 'isbn')
     add_tags(unsaved_edition_tags[ident], hash, 'isbn_10', 'isbn10')
+    add_tags(unsaved_edition_tags[ident], hash, 'dewey_decimal_class', 'dewey')
 
     add_tag(unsaved_edition_tags[ident], hash['identifiers'], 'goodreads')
     add_tag(unsaved_edition_tags[ident], hash['identifiers'], 'librarything')
@@ -153,22 +150,24 @@ class EditionSupport < OpenLibrarySupport
   end
 
   def save_edition_authors_and_works
+    i2i = idents_to_ids(Edition, unsaved_editions)
+
     edition_authors = []
     work_editions = []
     unsaved_editions.each_pair do |ident, hash|
-      edition = Edition.find_by(ident: ident)
-      if edition
+      edition_id = i2i[ident]
+      if edition_id
         hash.fetch(:authors, []).each do |author_ident|
           if author_ident
             author = Author.find_by(ident: author_ident)
-            edition_authors << "(#{ edition.id }, #{ author.id })" if author
+            edition_authors << "(#{ edition_id }, #{ author.id })" if author
           end
         end
 
         hash.fetch(:works, []).each do |work_ident|
           if work_ident
             work = Work.find_by(ident: work_ident)
-            work_editions << "(#{ edition.id }, #{ work.id })" if work
+            work_editions << "(#{ edition_id }, #{ work.id })" if work
           end
         end
       end
