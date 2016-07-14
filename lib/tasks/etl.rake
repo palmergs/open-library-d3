@@ -55,6 +55,7 @@ namespace :etl do
     ExternalLink.where(linkable_type: 'Author').delete_all
     WorkAuthor.delete_all
     EditionAuthor.delete_all
+    Author.delete_all
     p ". done deleting author data"
 
     p ". reading author data"
@@ -69,6 +70,7 @@ namespace :etl do
     ExternalLink.where(linkable_type: 'Work').delete_all
     WorkAuthor.delete_all
     WorkEdition.delete_all
+    Work.delete_all
     p ". done deleting work data"
 
     p ". reading work data"
@@ -84,6 +86,7 @@ namespace :etl do
     ExternalLink.where(linkable_type: 'Edition').delete_all
     EditionAuthor.delete_all
     WorkEdition.delete_all
+    Edition.delete_all
     p ". done deleting author data"
 
     p ". reading author data"
