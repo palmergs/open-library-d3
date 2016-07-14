@@ -4,7 +4,7 @@ class OpenLibrarySupport
 
   attr_reader :base_path
   
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 2000
 
   def initialize path
     @base_path = path
@@ -17,7 +17,7 @@ class OpenLibrarySupport
         cnt += 1
         sum += 1
         yield(line)
-        if cnt > BATCH_SIZE
+        if cnt >= BATCH_SIZE
           save_all
           cnt = 0
         end
