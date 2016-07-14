@@ -31,8 +31,8 @@ class EditionSupport < OpenLibrarySupport
     ident, revision, created_at, hash = parse_line(line)
     return if unsaved_editions[ident]
 
-    works = extract_works(hash)
-    authors = extract_authors(hash)
+    works = Set.new(extract_works(hash))
+    authors = Set.new(extract_authors(hash))
     unsaved_editions[ident] = {
       ident: ident,
       title: hash['title'] || 'unknown',
@@ -151,6 +151,8 @@ class EditionSupport < OpenLibrarySupport
 
   def save_edition_authors_and_works
     i2i = idents_to_ids(Edition, unsaved_editions)
+    ai2i = author_idents_to_ids(unsaved_editions)
+    wi2i = work_idents_to_ids(unsaved_editions)
 
     edition_authors = []
     work_editions = []
@@ -158,17 +160,13 @@ class EditionSupport < OpenLibrarySupport
       edition_id = i2i[ident]
       if edition_id
         hash.fetch(:authors, []).each do |author_ident|
-          if author_ident
-            author = Author.find_by(ident: author_ident)
-            edition_authors << "(#{ edition_id }, #{ author.id })" if author
-          end
+          author_id = ai2i[author_ident]
+          edition_authors << "(#{ edition_id }, #{ author_id })" if author_id
         end
 
         hash.fetch(:works, []).each do |work_ident|
-          if work_ident
-            work = Work.find_by(ident: work_ident)
-            work_editions << "(#{ edition_id }, #{ work.id })" if work
-          end
+          work_id = wi2i[work_ident]
+          work_editions << "(#{ edition_id }, #{ work_id })" if work_id
         end
       end
     end
@@ -184,5 +182,29 @@ class EditionSupport < OpenLibrarySupport
     end
 
     edition_authors.length + work_editions.length
+  end
+
+  def idents_from_field hash, field
+    idents = Set.new
+    hash.each_pair {|k,h| idents += h.fetch(field.to_sym, []) }
+    idents
+  end
+
+  def author_idents_to_ids hash
+    author_idents = idents_from_field(hash, :authors)
+    return {} if author_idents.empty?
+
+    Author.where(ident: author_idents.to_a).select(:id, :ident).each_with_object({}) do |a,h|
+      h[a.ident] = a.id
+    end
+  end
+
+  def work_idents_to_ids hash
+    work_idents = idents_from_field(hash, :works)
+    return {} if work_idents.empty?
+
+    Work.where(ident: work_idents.to_a).select(:id, :ident).each_with_object({}) do |w, h|
+      h[w.ident] = w.id
+    end
   end
 end
