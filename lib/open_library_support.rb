@@ -4,7 +4,7 @@ class OpenLibrarySupport
 
   attr_reader :base_path
   
-  BATCH_SIZE = 2000
+  BATCH_SIZE = 1200
 
   def initialize path
     @base_path = path
@@ -147,7 +147,8 @@ class OpenLibrarySupport
 
   def open_library_id str
     return nil unless str
-    str.split('/').last
+    id = str.split('/').last
+    id.present? ? id.strip[0..13] : nil
   end
 
   YEAR_SPLIT_REGEX = /[\s\\\/,._-]+/

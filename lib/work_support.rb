@@ -138,16 +138,15 @@ class WorkSupport < OpenLibrarySupport
 
   def save_work_authors
     i2i = idents_to_ids(Work, unsaved_works)
+    ai2i = author_idents_to_ids(unsaved_works)
 
     work_authors = []
     unsaved_works.each_pair do |ident, hash|
       work_id = i2i[ident]
       if work_id
         hash.fetch(:authors, []).each do |author_ident|
-          if author_ident
-            author = Author.find_by(ident: author_ident)
-            work_authors << "(#{ work_id }, #{ author.id })" if author
-          end
+          author_id = ai2i[author_ident]
+          work_authors << "(#{ work_id }, #{ author_id })" if author_id
         end
       end
     end
@@ -158,5 +157,16 @@ class WorkSupport < OpenLibrarySupport
     end
 
     work_authors.length
+  end
+
+  def author_idents_to_ids hash
+
+    author_idents = Set.new
+    hash.each_pair {|k,h| author_idents += h[:authors]}
+    return {} if author_idents.empty?
+
+    Author.where(ident: author_idents.to_a).select(:id, :ident).each_with_object({}) do |a,h|
+      h[a.ident] = a.id
+    end
   end
 end

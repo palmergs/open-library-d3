@@ -70,7 +70,6 @@ class EditionSupport < OpenLibrarySupport
     add_tags(unsaved_edition_tags[ident], hash, 'subject_people', 'person')
     add_tags(unsaved_edition_tags[ident], hash, 'subject_places', 'place')
     add_tags(unsaved_edition_tags[ident], hash, 'series', 'series')
-    add_tags(unsaved_edition_tags[ident], hash, 'source_records', 'source')
     add_tags(unsaved_edition_tags[ident], hash, 'oclc_numbers', 'oclc')
     add_tags(unsaved_edition_tags[ident], hash, 'isbn_13', 'isbn')
     add_tags(unsaved_edition_tags[ident], hash, 'isbn_10', 'isbn10')
@@ -101,7 +100,7 @@ class EditionSupport < OpenLibrarySupport
       if link.is_a?(Hash)
         name = link['title']
         url = link['url']
-        unsaved_edition_links[ident] << { name: name.downcase, value: url }
+        unsaved_edition_links[ident] << { name: name.downcase, value: url } if name.present? && url.present?
       end
     end
 
