@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import d3 from 'd3';
+import HasChartColors from 'frontend/mixins/has-chart-colors';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(HasChartColors, {
 
   path: null,
 
@@ -9,9 +10,6 @@ export default Ember.Component.extend({
 
   height: 200,
 
-  colorRange: [ '#99afff', '#f27993', '#557755', '#7f3f4d', '#992233', '#112288', '#d8adb6', '#d7d8dd', '#338811' ],
-
-  labelColorRange: [ '#222222', '#222222', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#222222', '#222222', '#ffffff' ],
 
   didInsertElement() {
     this._super(...arguments);

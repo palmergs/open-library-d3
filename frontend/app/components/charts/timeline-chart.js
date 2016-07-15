@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import d3 from 'd3';
+import HasChartColors from 'frontend/mixins/has-chart-colors';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(HasChartColors, {
 
   classNames: [ 'timeline-chart' ],
 
@@ -10,8 +11,6 @@ export default Ember.Component.extend({
   width: null,
 
   height: 400,
-
-  colorRange: [ '#99afff', '#f27993', '#557755', '#7f3f4d', '#992233', '#112288', '#d8adb6', '#d7d8dd', '#338811' ],
 
   didInsertElement() {
     this._super(...arguments);
@@ -23,6 +22,8 @@ export default Ember.Component.extend({
     const x = d3.scaleBand().rangeRound([0, width]);
 
     const y = d3.scaleLinear().range([ height, 0 ]);
+
+    const colors = this.get('colorRange');
 
     const path = this.get('path');
     if(path) {
@@ -64,6 +65,7 @@ export default Ember.Component.extend({
           data(data).
           enter().append('rect').
             attr('class', 'bar').
+            attr('fill', colors[0]).
             attr('x', function(d) { return x(+d.Decade); }).
             attr('y', function(d) { return y(+d.Count); }).
             attr('height', function(d) { return height - y(+d.Count); }).
