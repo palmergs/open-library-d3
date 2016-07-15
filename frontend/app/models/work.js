@@ -7,9 +7,9 @@ export default Model.extend({
   title: attr('string'),
   subtitle: attr('string'),
   lcc: attr('string'),
-  editionsCount: attr('number'),
   publishDate: attr('number'),
-  sentence: attr('string'),
+  excerpt: attr('string'),
   description: attr('string'),
+  workAuthorsCount: attr('number'),
   createdAt: attr('date')
 });

@@ -6,14 +6,15 @@ export default Model.extend({
   ident: attr('string'),
   title: attr('string'),
   subtitle: attr('string'),
+  statment: attr('string'),
   lcc: attr('string'),
   pages: attr('number'),
-  copyrightDate: attr('number'),
   publishDate: attr('number'),
-  publishCountry: attr('string'),
   format: attr('string'),
   series: attr('string'),
-  firstSentence: attr('string'),
+  excerpt: attr('string'),
   description: attr('string'),
+  editionAuthorsCount: attr('number'),
+  workEditionsCount: attr('number'),
   createdAt: attr('date')
 });

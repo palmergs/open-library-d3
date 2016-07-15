@@ -5,10 +5,8 @@ import attr from 'ember-data/attr';
 export default Model.extend({
   ident: attr('string'),
   name: attr('string'),
-  personalName: attr('string'),
   birthDate: attr('number'),
   deathDate: attr('number'),
-  deathPlace: attr('string'),
   description: attr('string'),
   createdAt: attr('date')
 });
