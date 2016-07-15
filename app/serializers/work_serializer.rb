@@ -6,6 +6,6 @@ class WorkSerializer < ActiveModel::Serializer
       :publish_date, 
       :excerpt, 
       :description, 
-      :created_at,
-      :work_authors_count
+      :work_authors_count,
+      :created_at
 end
