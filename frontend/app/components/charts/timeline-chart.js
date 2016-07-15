@@ -46,7 +46,7 @@ export default Ember.Component.extend({
 
         const xAxis = d3.axisBottom().
           scale(x).
-          tickValues(x.domain().filter(function(d, i) { return !(i % 2); }));
+          tickValues(x.domain().filter(function(d, i) { return (i % 2) !== 0; }));
         chart.append('g').attr('class', 'x axis').
           attr('transform', 'translate(0,'+ height +')').
           call(xAxis).
