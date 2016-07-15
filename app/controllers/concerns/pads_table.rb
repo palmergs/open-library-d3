@@ -9,22 +9,33 @@ module Concerns
         increment: 10, 
         complete: 2020
 
-      n = start
-      query.each do |entry|
-        time = entry.public_send(time_method.to_sym)
-        if time >= start
-          while n < time
-            table << [ n, 0 ]
-            n = n + increment
-          end
-          table << [ time, entry.public_send(count_method.to_sym) ]
-          n = time + increment
-        end
-      end
+      # convert each query into an enumerator;
+      # enumerators MUST be ascending by the time_method
+      enumerators = query.is_a?(Array) ? query : [ query ]
+      enumerators.map!(&:to_enum)
 
-      while n <= complete
-        table << [ n, 0 ]
-        n = n + increment
+      (start..complete).step(increment) do |n|
+        arr = [ n ]
+        enumerators.each do |enum|
+          begin
+            obj, key, val = advance_until(enum, n, time_method, count_method)
+            arr << (key == n ? val : 0)
+          rescue StopIteration
+            arr << 0 # at the end of the enumerator set value to 0
+          end
+        end
+
+        table << arr
+      end
+    end
+
+    def advance_until enum, n, time_method, count_method
+      while true
+        obj = enum.peek
+        key = obj.public_send(time_method)
+        return [ obj, key, obj.public_send(count_method) ] if key >= n
+
+        enum.next
       end
     end
   end
