@@ -4,7 +4,7 @@ class Api::V1::Charts::AuthorController < ApplicationController
   include Concerns::PadsTable
 
   def birth_timeline
-    csv = Rails.cache.fetch("author/birth-timeline", expires_in: 1.minute) do
+    csv = Rails.cache.fetch("author/birth-timeline", expires_in: 1.hour) do
       decades1 = Author.select('((birth_date / 10) * 10) as decade, count(*) as count').
           where('birth_date between 1000 and 2016').
           group('decade').

@@ -10,14 +10,14 @@ class Work < ActiveRecord::Base
   has_many :external_links, dependent: :destroy, as: :linkable
   has_many :subject_tags, dependent: :destroy, as: :taggable
 
-  scope :by_title_prefix, ->(q) {
+  scope :by_prefix, ->(q) {
     if q.present?
-      normalized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
-      where('title like ?', "#{ normalized }%")
+      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
+      where('title like ?', "#{ sanitized }%")
     end
   }
 
-  scope :by_date, ->(n) {
+  scope :by_year, ->(n) {
     if n.present? && n.to_i > 0
       where(publish_date: n.to_i)
     end

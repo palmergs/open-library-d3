@@ -3,11 +3,11 @@ module Concerns
     extend ActiveSupport::Concern
 
     def page_number
-      params.fetch(:page, {}).fetch(:number, 0)
+      params.fetch(:p, 0)
     end
 
     def page_size
-      params.fetch(:page, {}).fetch(:size, 25)
+      params.fetch(:n, 20)
     end
 
     def pagination_meta query

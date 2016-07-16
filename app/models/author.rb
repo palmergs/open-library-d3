@@ -9,4 +9,17 @@ class Author < ActiveRecord::Base
 
   has_many :external_links, dependent: :destroy, as: :linkable
   has_many :subject_tags, dependent: :destroy, as: :taggable
+
+  scope :by_prefix, ->(q) {
+    if q.present?
+      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
+      where('name like ?', "#{ sanitized }%")
+    end
+  }
+
+  scope :by_year, ->(year) {
+    if year && year.to_i > 0
+      where(birth_date: year.to_i)
+    end
+  }
 end

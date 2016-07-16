@@ -3,7 +3,11 @@ class Api::V1::AuthorsController < ApplicationController
   include Concerns::HasIndexSort
 
   def index
-    @authors = Author.page(page_number).per(page_size).order(sort_order)
+    @authors = Author.by_prefix(params[:q]).
+        by_year(params[:y]).
+        page(page_number).
+        per(page_size).
+        order(sort_order)
     render json: @authors, meta: { 
       pagination: pagination_meta(@authors)
     }
