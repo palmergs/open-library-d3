@@ -10,5 +10,6 @@ export default Model.extend({
   description: attr('string'),
   createdAt: attr('date'),
 
-  subjectTags: hasMany('subject-tag')
+  subjectTags: hasMany('subject-tag'),
+
 });

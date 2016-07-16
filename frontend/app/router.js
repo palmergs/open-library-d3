@@ -12,9 +12,11 @@ Router.map(function() {
   });
   this.route('works', function() {
     this.route('work', { path: ':id' });
+    this.route('year', { path: 'year/:year' });
   });
   this.route('editions', function() {
     this.route('edition', { path: ':id' });
+    this.route('year', { path: 'year/:year' });
   });
   this.route('home');
 });

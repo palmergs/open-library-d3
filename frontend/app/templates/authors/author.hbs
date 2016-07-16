@@ -1,0 +1,18 @@
+<dl>
+  <dt>Name</dt>
+  <dd>{{model.name}}</dd>
+  <dt>Years</dt>
+  <dd>{{with-unknown model.birthDate}} to {{with-unknown model.deathDate}}</dd>
+  <dt>Description</dt>
+  <dd>{{model.description}}</dd>
+  <dt>Tags</dt>
+  <dd>
+  {{#each model.subjectTags as |tag|}}
+    <span class="tag">
+      <span class="name">{{tag.name}}</span>
+      <span class="value">{{tag.value}}</span>
+    </span>
+  {{/each}}
+  </dd>
+</dl>
+{{outlet}}
