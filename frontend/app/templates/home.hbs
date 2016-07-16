@@ -5,12 +5,12 @@
       <label class="centered">Relative Number of Table Rows (main tables)</label>
     </div>
     <div class="four columns">
-      {{charts.pie-chart path="/api/v1/charts/metadata/all"}}
-      <label class="centered">Relative Number of Table Rows (all tables)</label>
-    </div>
-    <div class="four columns">
       {{charts.pie-chart path="/api/v1/charts/metadata/tag"}}
       <label class="centered">Relative Number of Subject Tags</label>
+    </div>
+    <div class="four columns">
+      {{charts.pie-chart path="/api/v1/charts/metadata/token"}}
+      <label class="centered">Relative Number of Normalized Tokens by Entity</label>
     </div>
   </div>
   <div class="row">
