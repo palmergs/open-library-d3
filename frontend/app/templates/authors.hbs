@@ -9,11 +9,16 @@
             <th>Death</th>
           </tr>
         </thead>
+        <tfoot>
+          <tr>
+            <td colspan="3">{{page-elements.pagination model=model}}</td>
+          </tr>
+        </tfoot>
         <tbody>
           {{#each model as |author|}}
             <tr>
               <td>{{author.name}}</td>
-              <td>{{author.birthDate}}</td>
+              <td>{{#if author.birthDate}}{{link-to author.birthDate 'authors.year' author.birthDate}}{{/if}}</td>
               <td>{{author.deathDate}}</td>
             </tr>
           {{/each}}

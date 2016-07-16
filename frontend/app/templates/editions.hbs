@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <div class="twelve columns">
+    <div class="eight columns">
       <table class="table">
         <tbody>
           {{#each model as |edition|}}
@@ -13,6 +13,8 @@
         </tbody>
       </table>
     </div>
+    <div class="four columns">
+      {{outlet}}
+    </div>
   </div>
 </div>
-{{outlet}}
