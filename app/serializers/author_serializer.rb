@@ -5,4 +5,7 @@ class AuthorSerializer < ActiveModel::Serializer
       :death_date, 
       :description, 
       :created_at
+
+  has_many :subject_tags
+  has_many :external_links
 end

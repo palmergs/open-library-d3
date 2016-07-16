@@ -1,4 +1,6 @@
 class Work < ActiveRecord::Base
+  include Concerns::IsScopedByIds
+
   has_many :work_authors, dependent: :destroy
   has_many :authors, through: :work_authors
 

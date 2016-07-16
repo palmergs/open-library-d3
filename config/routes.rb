@@ -6,6 +6,9 @@ Rails.application.routes.draw do
       resources :works, only: [ :index, :show ]
       resources :authors, only: [ :index, :show ]
       resources :editions, only: [ :index, :show ]
+      resources :subject_tags, path: 'subject-tags', only: [ :index, :show ]
+      resources :external_links, path: 'external-links', only: [ :index, :show ]
+      resources :tokens, only: [ :index, :show ]
 
       namespace :charts do
         get 'metadata/main', to: 'database_metadata#main_tables'

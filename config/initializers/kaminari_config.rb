@@ -6,5 +6,5 @@ Kaminari.configure do |config|
   # config.left = 0
   # config.right = 0
   # config.page_method_name = :page
-  config.param_name = :p
+  # config.param_name = :p
 end

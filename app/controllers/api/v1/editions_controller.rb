@@ -1,12 +1,10 @@
 class Api::V1::EditionsController < ApplicationController
+  include Concerns::HasPageNumbers
+  include Concerns::HasIndexSort
   def index
-    @editions = Edition.page(params[:p]).per(params[:cnt] || 20).order(sort_order)
+    @editions = Edition.page(page_number).per(page_size).order(sort_order)
     render json: @editions, meta: {
-      pagination: {
-        total_pages: @editions.total_pages,
-        total_count: @editions.total_count,
-        current_page: @editions.current_page
-      }
+      pagination: pagination_meta(@editions)
     }
   end
 

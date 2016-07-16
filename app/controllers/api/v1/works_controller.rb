@@ -1,12 +1,10 @@
 class Api::V1::WorksController < ApplicationController
+  include Concerns::HasPageNumbers
+  include Concerns::HasIndexSort
   def index
-    @works = Work.page(params[:p]).per(params[:cnt] || 20).order(sort_order)
+    @works = Work.page(page_number).per(page_size).order(sort_order)
     render json: @works, meta: {
-      pagination: {
-        total_pages: @works.total_pages,
-        total_count: @works.total_count,
-        current_page: @works.current_page
-      }
+      pagination: pagination_meta(@works)
     }
   end
 

@@ -1,4 +1,5 @@
 class Edition < ActiveRecord::Base
+  include Concerns::IsScopedByIds
 
   has_many :work_editions, dependent: :destroy
   has_many :works, through: :work_editions
