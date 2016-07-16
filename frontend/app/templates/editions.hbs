@@ -2,12 +2,24 @@
   <div class="row">
     <div class="eight columns">
       <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Subtitle</th>
+            <th>Published</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <td colspan="3">{{page-elements.pagination model=model}}</td>
+          </tr>
+        </tfoot>
         <tbody>
           {{#each model as |edition|}}
             <tr>
               <td>{{edition.title}}</td>
               <td>{{edition.subtitle}}</td>
-              <td>{{edition.publishDate}}</td>
+              <td>{{#if edition.publishDate}}{{link-to edition.publishDate 'editions.year' edition.publishDate}}{{/if}}</td>
             </tr>
           {{/each}}
         </tbody>
