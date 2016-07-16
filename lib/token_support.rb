@@ -38,16 +38,9 @@ class TokenSupport
     if range
       range.each do |year|
         if year > 0 && year <= Date.today.year
-          count = clazz.where(date_field.to_sym => year).count
-          if count > 0
-            page = 0
-            page_size = 2_000
-            begin
-              hash = build_hash(clazz, page, page_size, date_field, text_fields, year)
-              inserted = insert_all(clazz, category, year, hash)
-              pp ". #{ year }: inserted #{ inserted } tokens for #{ clazz.name } (#{ category })"
-            end while ((page += 1) * page_size) < count
-          end
+          hash = build_hash(clazz, date_field, text_fields, year)
+          inserted = insert_all(clazz, category, year, hash)
+          pp ". #{ year }: inserted #{ inserted } tokens for #{ clazz.name } (#{ category })"
         end
       end
     end
@@ -63,15 +56,22 @@ class TokenSupport
     end
   end
 
-  def build_hash clazz, page, page_size, date_field, text_fields, year
-    text_fields = Array.wrap(text_fields)
+  PAGE_SIZE = 2000
+
+  def build_hash clazz, date_field, text_fields, year
+    text_fields = Array(text_fields)
     hash = Hash.new(0)
-    query = clazz.where(date_field.to_sym => year).page(page).per(page_size)
-    query.each do |record|
-      text_fields.each do |field|
-        string = record.read_attribute(field)
-        normalized_tokens(string).each do |token|
-          hash[token] += 1  
+
+    total = clazz.where(date_field.to_sym => year).count
+    pages = total / PAGE_SIZE + 1
+    pages.times do |pg|
+      query = clazz.where(date_field.to_sym => year).page(pg).per(PAGE_SIZE)
+      query.each do |record|
+        text_fields.each do |field|
+          string = record.read_attribute(field)
+          normalized_tokens(string).each do |token|
+            hash[token] += 1
+          end
         end
       end
     end
