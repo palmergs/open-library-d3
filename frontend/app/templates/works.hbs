@@ -6,15 +6,20 @@
           <tr>
             <th>Title</th>
             <th>Subtitle</th>
-            <th>Publishd</th>
+            <th>Published</th>
           </tr>
         </thead>
+        <tfoot>
+          <tr>
+            <td colspan="3">{{page-elements.pagination model=model}}</td>
+          </tr>
+        </tfoot>
         <tbody>
           {{#each model as |work|}}
             <tr>
               <td>{{work.title}}</td>
               <td>{{work.subtitle}}</td>
-              <td>{{work.publishDate}}</td>
+              <td>{{#if work.publishDate}}{{link-to work.publishDate 'works.year' work.publishDate}}{{/if}}</td>
             </tr>
           {{/each}}
         </tbody>

@@ -1,0 +1,15 @@
+<div class="sidebar">
+  <div class="row">
+    <label>Authors Born in {{ model.year }}</label>
+    {{page-elements.author-list params=model}}
+  </div>
+  <div class="row">
+    <label>Works Published in {{ model.year }}</label>
+    {{page-elements.work-list params=model}}
+  </div>
+  <div class="row">
+    <label>Common Tokens</label>
+    {{page-elements.token-list params=model}}
+  </div>
+  {{outlet}}
+</div>
