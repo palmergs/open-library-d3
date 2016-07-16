@@ -44,7 +44,7 @@ namespace :etl do
   end
 
   desc "generate token data"
-  task :generate_tokens do 
+  task generate_tokens: :environment do 
     p "generating tokens..."
     read_tokens
   end
