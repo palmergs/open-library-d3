@@ -2,10 +2,6 @@ require 'unidecoder'
 
 class TokenSupport
 
-  IDENTIFIER = 1
-  DESCRIPTION = 2
-  CONTENT = 3
-
   def process_all
     process_authors
     process_works
@@ -14,25 +10,25 @@ class TokenSupport
 
   def process_authors
 
-    process(Author, :birth_date, :name, IDENTIFIER)
-    process(Author, :birth_date, :description, DESCRIPTION)
+    process(Author, :birth_date, :name, Token::IDENTIFIER)
+    process(Author, :birth_date, :description, Token::DESCRIPTION)
 
   end
 
   def process_works
 
-    process(Work, :publish_date, [:title, :subtitle], IDENTIFIER)
-    process(Work, :publish_date, :description, DESCRIPTION)
-    process(Work, :publish_date, :excerpt, CONTENT)
+    process(Work, :publish_date, [:title, :subtitle], Token::IDENTIFIER)
+    process(Work, :publish_date, :description, Token::DESCRIPTION)
+    process(Work, :publish_date, :excerpt, Token::CONTENT)
 
   end
 
 
   def process_editions
 
-    process(Edition, :publish_date, [ :title, :subtitle, :statement, :series ], IDENTIFIER)
-    process(Edition, :publish_date, :description, DESCRIPTION)
-    process(Edition, :publish_date, :excerpt, CONTENT)
+    process(Edition, :publish_date, [ :title, :subtitle, :statement, :series ], Token::IDENTIFIER)
+    process(Edition, :publish_date, :description, Token::DESCRIPTION)
+    process(Edition, :publish_date, :excerpt, Token::CONTENT)
 
   end
 
@@ -82,14 +78,11 @@ class TokenSupport
     hash
   end
 
-  STOP_WORDS = Set.new([ 'the', 'and', 'in', 'be', 'to', 'of', 'it', 
-                         'that', 'have', 'on', 'at', 'or', 'el', 'la', 
-                         'en', 'un', 'de' ])
 
   def insert_all clazz, category, year, hash
     arr = []
     hash.each_pair do |token, count|
-      unless STOP_WORDS.include?(token)
+      unless Token::STOP_WORDS.include?(token)
         escaped_quote = token[0...59].gsub("'", "''")
         arr << "('#{ clazz.name }', #{ category }, #{ year }, '#{ escaped_quote }', #{ count } )"
       end

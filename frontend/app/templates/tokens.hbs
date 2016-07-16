@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="row">
+    <div class="twelve columns">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Token</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <td colspan="5">{{page-elements.pagination model=model action=(action 'setPage')}}</td>
+          </tr>
+        </tfoot>
+        <tbody>
+          {{#each model as |token|}}
+            <tr>
+              <td>{{token.year}}</td>
+              <td>{{token.tokenType}}</td>
+              <td>{{token.category}}</td>
+              <td>{{token.token}}</td>
+              <td>{{token.count}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
