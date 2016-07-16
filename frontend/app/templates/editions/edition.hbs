@@ -1,1 +1,18 @@
+<dl>
+  <dt>Title</dt>
+  <dd>{{model.publishDate}}((#if model.subtitle}}<br/>{{model.subtitle}}{{/if}}</dd>
+  <dt>Published</dt>
+  <dd>{{with-unknown model.publishDate}}</dd>
+  <dt>Description</dt>
+  <dd>{{model.description}}</dd>
+  <dt>Tags</dt>
+  <dd>
+  {{#each model.subjectTags as |tag|}}
+    <span class="tag">
+      <span class="name">{{tag.name}}</span>
+      <span class="value">{{tag.value}}</span>
+    </span>
+  {{/each}}
+  </dd>
+</dl>
 {{outlet}}
