@@ -27,6 +27,28 @@
   }
 }
 
+.pagination {
+  list-style: none;
+  margin-bottom: 0;
+  line-height: 4rem;
+  li {
+    cursor: pointer;
+    position: relative;
+    float: left;
+    margin-bottom: 0;
+    a {
+      margin-right: 10px;
+      line-height: 4rem;
+    }
+    &.current {
+      a {
+        color: black;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
 label {
   font-weight: normal;
   font-size: 12px;
@@ -34,6 +56,10 @@ label {
 
 label.centered {
   text-align: center;
+}
+
+table.table {
+  width: 100%;
 }
 
 .timeline-chart {
@@ -47,5 +73,11 @@ label.centered {
     fill: none;
     stroke: #222;
     shape-rendering: crispEdges;
+  }
+}
+
+.sidebar {
+  .row {
+    margin-bottom: 30px;
   }
 }

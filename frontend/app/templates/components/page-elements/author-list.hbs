@@ -1,0 +1,8 @@
+{{#if model}}
+  {{#each model as |author|}}
+    <div>
+      {{link-to author.name 'authors.author' author.id}}
+    </div>
+  {{/each}}
+{{/if}}
+{{yield}}

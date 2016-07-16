@@ -1,0 +1,8 @@
+{{#if model}}
+  {{#each model as |work|}}
+    <div>
+      {{link-to work.title 'works.work' work.id}}
+    </div>
+  {{/each}}
+{{/if}}
+{{yield}}

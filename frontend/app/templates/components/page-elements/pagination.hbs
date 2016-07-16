@@ -1,0 +1,16 @@
+<nav>
+  <ul class="pagination">
+    <li class={{if isFirst 'current'}}>
+      <a {{action 'pageSelected' 1}}>&laquo;</a>
+    </li>
+    {{#each pages as |pg|}}
+      <li class={{if pg.current 'current'}}>
+        <a {{action 'pageSelected' pg.page}}>{{ pg.page }}</a>
+      </li>
+    {{/each}}
+    <li class={{if isLast 'current'}}>
+      <a {{action 'pageSelected' lastPage}}>&raquo;</a>
+    </li>
+  </ul>
+</nav>
+{{yield}}
