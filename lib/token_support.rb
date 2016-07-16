@@ -65,7 +65,7 @@ class TokenSupport
     total = clazz.where(date_field.to_sym => year).count
     pages = total / PAGE_SIZE + 1
     pages.times do |pg|
-      query = clazz.where(date_field.to_sym => year).page(pg).per(PAGE_SIZE)
+      query = clazz.where(date_field.to_sym => year).page(pg + 1).per(PAGE_SIZE)
       query.each do |record|
         text_fields.each do |field|
           string = record.read_attribute(field)
