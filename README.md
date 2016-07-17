@@ -40,7 +40,7 @@ This is a standard rails project using [PostgreSQL](https://www.postgresql.org).
 Run Rails Server
 ----------------
 
-Fire up the rails server (e.g. `rails s -p 3030`), if everything is working correctly you should see an empty front-end at [http://localhost:3030].
+Fire up the rails server (e.g. `rails s -p 3030`), if everything is working correctly you should see an empty front-end at (http://localhost:3030).
 
 
 Load Data
