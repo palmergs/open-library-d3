@@ -97,11 +97,7 @@ class TokenSupport
   end
 
   def normalized_tokens str
-    self.class.tokenize(str)
+    Token.tokenize(str)
   end
 
-  def self.tokenize str
-    return [] unless str && str.to_s.present?
-    str.to_s.to_ascii.scan(/[\w][\w'-]+/).map(&:downcase)
-  end
 end

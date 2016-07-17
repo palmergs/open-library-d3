@@ -7,9 +7,9 @@ class Token < ActiveRecord::Base
 
   TOKEN_TYPES = Set.new([ 'Work', 'Author', 'Edition' ])
 
-  STOP_WORDS = Set.new([ 'the', 'and', 'in', 'be', 'to', 'of', 'it', 
+  STOP_WORDS = Set.new([ 'the', 'and', 'in', 'be', 'to', 'of', 'it', 'from',
                          'that', 'have', 'on', 'at', 'or', 'el', 'la', 
-                         'en', 'un', 'de' ])
+                         'en', 'un', 'de', 'und', 'with', 'for', 'der', 'das' ])
 
   scope :by_year, ->(y) {
     if y && y.to_i > 0
@@ -51,4 +51,14 @@ class Token < ActiveRecord::Base
       end
     end
   }
+
+  def self.tokenize str
+    return [] unless str && str.to_s.present?
+    normalize(str).scan(/[\w][\w'-]+/)
+  end
+
+  def self.normalize str
+    return nil unless str && str.to_s.present?
+    str.to_s.to_ascii.downcase
+  end
 end
