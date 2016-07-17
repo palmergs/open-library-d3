@@ -12,7 +12,7 @@ set :user, 'palmergs'
 set :deploy_to, '/home/palmergs/apps/library'
 set :branch, ENV["BRANCH"] || raise("set BRANCH value in environment")
 
-server '192.241.150.55', user: 'palmergs', roles: %w{ web app db }
+server '198.199.122.218', user: 'palmergs', roles: %w{ web app db }
 
 # role-based syntax
 # ==================

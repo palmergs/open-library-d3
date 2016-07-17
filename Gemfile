@@ -36,16 +36,14 @@ group :development, :test do
   gem 'pry-rails'
 end
 
+gem 'puma'
+
 group :development do
-  gem 'puma'
   gem 'capistrano'
   gem 'capistrano-rvm'
   gem 'capistrano-rails'
-#  gem 'capistrano3-unicorn'
   gem 'capistrano3-puma'
 end
 
 group :production do
-#  gem 'unicorn'
-  gem 'puma'
 end
