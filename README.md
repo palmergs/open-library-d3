@@ -37,6 +37,17 @@ This is a standard rails project using [PostgreSQL](https://www.postgresql.org).
     * `rake db:create`
     * `rake db:migrate`
 
+Load Data
+---------
+
+This project is essentially just a front end tool for three large data files. The raw file size is approximately 35G and the processed import will generate Download the three individual data files–`ol_dump_editions_latest.txt.gz`, `ol_dump_editions_latest.txt.gz` and `ol_dump_editions_latest.txt.gz`–from OpenLibrary.org and extract them into a directory (e.g. `/path/to/dowloads/OpenLibrary/`). Run the following rake tasks:
+
+* `rake load_authors[/path/to/downloads/OpenLibrary]`
+* `rake load_works[/path/to/downloads/OpenLibrary]`
+* `rake load_editions[/path/to/downloads/OpenLibrary]`
+* `rake generate_tokens`
+* or a catch-all task: `rake load_all[/path/to/downloads/OpenLibrary]`
+
 TODO
 ----
 
