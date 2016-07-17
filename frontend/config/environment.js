@@ -40,7 +40,15 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    ENV.contentSecurityPolicy = {
+      'default-src': "'none'",
+      'script-src': "'self'",
+      'font-src': "'self'",
+      'connect-src': "'self' localhost:* 192.241.150.55 galenpalmer.org",
+      'img-src': "'self' data:",
+      'style-src': "'self' 'unsafe-inline' 'unsafe-eval'",
+      'media-src': "'self'"
+    }
   }
 
   return ENV;
