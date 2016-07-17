@@ -17,6 +17,9 @@ gem 'ember-cli-rails'
 # For converting Unicode characters to ASCII for comparison
 gem 'unidecoder'
 
+# For cron jobs
+gem 'whenever'
+
 group :doc do
   gem 'sdoc', require: false
 end
@@ -30,6 +33,19 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'faker'
   gem 'factory_girl_rails'
-  gem 'puma'
   gem 'pry-rails'
+end
+
+group :development do
+  gem 'puma'
+  gem 'capistrano'
+  gem 'capistrano-rvm'
+  gem 'capistrano-rails'
+#  gem 'capistrano3-unicorn'
+  gem 'capistrano3-puma'
+end
+
+group :production do
+#  gem 'unicorn'
+  gem 'puma'
 end
