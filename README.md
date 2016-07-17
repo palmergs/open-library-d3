@@ -23,6 +23,20 @@ This project is available under the MIT license. The use of the OpenLibrary.org 
 [Open Library Data Dumps](https://openlibrary.org/developers/dumps) is subject to the 
 Internet Archive's [Terms of Use](https://archive.org/about/terms.php).
 
+Project Setup
+-------------
+
+This is a standard rails project using [PostgreSQL](https://www.postgresql.org). At a high level the following steps are required:
+
+* Set up your environment so that Ruby on Rails can run locally. 
+* Clone this repo into a project directory
+* Install your gems (e.g. `bundle install`)
+* Set up a PostgreSQL database server. Create a user that has `CREATE` privileges if you want the rails project to build your database during setup (or, if in development, simply make your user a `superuser`).
+* Create a `config/database.yml` using the login setting from your database setup. There is an example config file named `config/database.yml.example` that can be used as a template.
+* Initialize your database:
+** `rake db:create`
+** `rake db:migrate`
+
 TODO
 ----
 
