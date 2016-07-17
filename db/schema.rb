@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160713195208) do
+ActiveRecord::Schema.define(version: 20160717010628) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 20160713195208) do
   add_index "editions", ["edition_authors_count"], name: "index_editions_on_edition_authors_count", using: :btree
   add_index "editions", ["ident"], name: "index_editions_on_ident", unique: true, using: :btree
   add_index "editions", ["lcc"], name: "index_editions_on_lcc", using: :btree
+  add_index "editions", ["publish_date"], name: "index_editions_on_publish_date", using: :btree
   add_index "editions", ["work_editions_count"], name: "index_editions_on_work_editions_count", using: :btree
 
   create_table "external_links", force: :cascade do |t|
@@ -73,6 +74,7 @@ ActiveRecord::Schema.define(version: 20160713195208) do
   end
 
   add_index "external_links", ["linkable_id", "linkable_type"], name: "index_external_links_on_linkable_id_and_linkable_type", using: :btree
+  add_index "external_links", ["name"], name: "index_external_links_on_name", using: :btree
 
   create_table "subject_tags", force: :cascade do |t|
     t.integer  "taggable_id",              null: false
@@ -83,6 +85,7 @@ ActiveRecord::Schema.define(version: 20160713195208) do
     t.datetime "updated_at",               null: false
   end
 
+  add_index "subject_tags", ["name"], name: "index_subject_tags_on_name", using: :btree
   add_index "subject_tags", ["taggable_id", "taggable_type"], name: "index_subject_tags_on_taggable_id_and_taggable_type", using: :btree
 
   create_table "tokens", force: :cascade do |t|
@@ -93,6 +96,7 @@ ActiveRecord::Schema.define(version: 20160713195208) do
     t.integer "count",                 default: 0, null: false
   end
 
+  add_index "tokens", ["category"], name: "index_tokens_on_category", using: :btree
   add_index "tokens", ["token"], name: "index_tokens_on_token", using: :btree
   add_index "tokens", ["token_type", "category", "year"], name: "index_tokens_on_token_type_and_category_and_year", using: :btree
   add_index "tokens", ["year"], name: "index_tokens_on_year", using: :btree
