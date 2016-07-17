@@ -12,12 +12,16 @@ export default Ember.Component.extend(HasChartColors, {
 
   height: 400,
 
+  fieldNames: [ 'Count', 'Count1', 'Count2' ],
+
+  dateField: 'Decade',
+
   didInsertElement() {
     this._super(...arguments);
 
     const margin = { top: 20, right: 90, bottom: 30, left: 40 },
-      width = (this.get('width') || this.$().width()) - margin.left - margin.right, // default to element width
-      height = (this.get('height') || (width / 4)) - margin.top - margin.bottom; // default to 4:1 ratio height to width
+      width = (this.get('width') || this.$().width()) - margin.left - margin.right,
+      height = (this.get('height') || (width / 4)) - margin.top - margin.bottom;
 
     const colors = this.get('colorRange');
 
@@ -27,6 +31,9 @@ export default Ember.Component.extend(HasChartColors, {
 
     const path = this.get('path');
     if(path) {
+
+      const fieldNames = this.get('fieldNames');
+      const dateField = this.get('dateField');
 
       const chart = d3.select(this.$().get(0)).
         append('svg').
@@ -39,10 +46,14 @@ export default Ember.Component.extend(HasChartColors, {
       Ember.$.ajax(path).done(function(csv) {
 
         const data = d3.csvParse(csv);
-        const max = d3.max(data, function(d) { return Math.max(+d.Count, +d.Count1); });
+        const max = d3.max(data, function(d) { 
+          let x = 0;
+          fieldNames.forEach((field) => { x = Math.max(x, +d[field]); }); // refactor as collect/inject
+          return x;
+        });
 
         y.domain([ 0, max ]);
-        x.domain(data.map(function(d) { return +d.Decade; }));
+        x.domain(data.map(function(d) { return +d[dateField]; }));
 
         const xAxis = d3.axisBottom().
           scale(x).
@@ -60,28 +71,19 @@ export default Ember.Component.extend(HasChartColors, {
         const yAxis = d3.axisRight().scale(y);
         chart.append('g').attr('class', 'y axis').attr('transform', 'translate('+ width +',0)').call(yAxis);
 
-        chart.selectAll('.b0').
-          data(data).
-          enter().append('rect').
-            attr('class', 'bar').
-            attr('class', 'b0').
-            attr('fill', colors[0]).
-            attr('x', function(d) { return x(+d.Decade); }).
-            attr('y', function(d) { return y(+d.Count); }).
-            attr('height', function(d) { return height - y(+d.Count); }).
-            attr('width', x.bandwidth() / 2);
-
-        chart.selectAll('.b1').
-          data(data).
-          enter().append('rect').
-            attr('class', 'bar').
-            attr('class', 'b1').
-            attr('fill', colors[1]).
-            attr('x', function(d) { return x(+d.Decade) + (x.bandwidth() / 2); }).
-            attr('y', function(d) { return y(+d.Count1); }).
-            attr('height', function(d) { return height - y(+d.Count1); }).
-            attr('width', x.bandwidth() / 2);
-
+        fieldNames.forEach((field, idx) => {
+          let key = `b${ idx }`;
+          chart.selectAll(`.${ key }`).
+            data(data).
+            enter().append('rect').
+              attr('class', 'bar').
+              attr('class', key).
+              attr('fill', colors[idx]).
+              attr('x', function(d) { return x(+d[dateField]) + (idx * (x.bandwidth() / fieldNames.length)); }).
+              attr('y', function(d) { return y(+d[field]); }).
+              attr('height', function(d) { return height - y(+d[field]); }).
+              attr('width', x.bandwidth() / fieldNames.length);
+        });
       });
     }
   }
