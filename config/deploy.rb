@@ -2,7 +2,7 @@
 lock '3.5.0'
 
 set :application, 'library'
-set :repo_url, 'git@example.com:palmergs/open-library-d3.git'
+set :repo_url, 'git@github.com:palmergs/open-library-d3.git'
 set :user, 'palmergs'
 
 set :puma_threads,    [4, 16]
