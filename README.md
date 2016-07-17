@@ -34,8 +34,8 @@ This is a standard rails project using [PostgreSQL](https://www.postgresql.org).
 * Set up a PostgreSQL database server. Create a user that has `CREATE` privileges if you want the rails project to build your database during setup (or, if in development, simply make your user a `superuser`).
 * Create a `config/database.yml` using the login setting from your database setup. There is an example config file named `config/database.yml.example` that can be used as a template.
 * Initialize your database:
-** `rake db:create`
-** `rake db:migrate`
+    * `rake db:create`
+    * `rake db:migrate`
 
 TODO
 ----
