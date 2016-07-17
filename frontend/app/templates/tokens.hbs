@@ -1,33 +1,11 @@
 <div class="container">
   <div class="row">
-    <div class="twelve columns">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Type</th>
-            <th>Category</th>
-            <th>Token</th>
-            <th>Count</th>
-          </tr>
-        </thead>
-        <tfoot>
-          <tr>
-            <td colspan="5">{{page-elements.pagination model=model action=(action 'setPage')}}</td>
-          </tr>
-        </tfoot>
-        <tbody>
-          {{#each model as |token|}}
-            <tr>
-              <td>{{token.year}}</td>
-              <td>{{token.tokenType}}</td>
-              <td>{{token.category}}</td>
-              <td>{{token.token}}</td>
-              <td>{{token.count}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
+    <div class="nine columns">
+      {{page-elements.token-comparison params=model }}
+    </div>
+    <div class="three columns">
+      <label>Tokens</label>
+      <input class="u-full-width" type="text" placeholder="enter terms to search">
     </div>
   </div>
 </div>

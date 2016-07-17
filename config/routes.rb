@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
 
-
   namespace :api do
     namespace :v1 do
       resources :works, only: [ :index, :show ]
@@ -19,6 +18,7 @@ Rails.application.routes.draw do
         get 'author/births', to: 'author#birth_timeline'
         get 'work/published', to: 'work#publish_timeline'
         get 'edition/published', to: 'edition#publish_timeline'
+        get 'token/timeline', to: 'token#timeline'
       end
     end
   end

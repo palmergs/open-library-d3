@@ -12,7 +12,7 @@ export default Ember.Component.extend(HasChartColors, {
 
   height: 400,
 
-  fieldNames: [ 'Count', 'Count1', 'Count2' ],
+  fieldNames: [ 'Count' ],
 
   dateField: 'Decade',
 
