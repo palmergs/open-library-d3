@@ -21,6 +21,17 @@ namespace :etl do
 
   end
 
+  desc "load author data file (WARNING: not idempotent)"
+  task :load_authors, [ :path ] => :environment do |t, args|
+
+    raise "path to folder is requires" unless args.path.present?
+    raise "expected #{ args.path } to be a folder" unless File.directory?(args.path)
+    raise "#{ args.path } is not readable" unless File.readable?(args.path)
+
+    p "reading work data from #{ args.path }..."
+    read_authors(args.path)
+  end
+
   desc "load work data file (WARNING: not idempotent)"
   task :load_works, [ :path ] => :environment do |t, args|
 

@@ -18,7 +18,7 @@ RSpec.describe TokenSupport, as: :lib do
       }
 
       samples.each_pair do |string, tokens|
-        extracted = TokenSupport.tokenize(string)
+        extracted = Token.tokenize(string)
         tokens.each do |token|
           expect(extracted).to include(token)
         end
