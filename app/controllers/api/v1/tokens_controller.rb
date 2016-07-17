@@ -1,6 +1,7 @@
 class Api::V1::TokensController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
+
   def index
     @tokens = Token.by_token(params[:q]).
         by_type(params[:t]).
