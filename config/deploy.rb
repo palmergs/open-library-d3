@@ -74,8 +74,16 @@ namespace :deploy do
     end
   end
 
+  desc 'Build ember assets' 
+  task :build_ember do
+    on roles(:app) do
+      run "cd #{ deploy_to }/current && RAILS_ENV=#{ stage } bundle exec rake ember:compile && cp tmp/ember-cli/apps/frontend/* public/assets/."
+    end
+  end
+
   before :starting,     :check_revision
   after  :finishing,    :compile_assets
+  after  :compile_assets, :build_ember
   after  :finishing,    :cleanup
   after  :finishing,    :restart
 end
