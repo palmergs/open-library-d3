@@ -1,6 +1,8 @@
 class Author < ActiveRecord::Base
   include Concerns::IsScopedByIds
 
+  self.primary_key = "id"
+
   has_many :work_authors, dependent: :destroy
   has_many :authors, through: :work_authors
 
