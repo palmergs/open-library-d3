@@ -11,16 +11,16 @@
         </thead>
         <tfoot>
           <tr>
-            <td colspan="3">{{page-elements.pagination model=model}}</td>
+            <td colspan="3">{{page-elements.pagination model=model action=(action 'setPage')}}</td>
           </tr>
         </tfoot>
         <tbody>
           {{#each model as |edition|}}
-            <tr>
+            {{#tables.clickable-row action=(action 'showEdition' edition)}}
               <td>{{edition.title}}</td>
               <td>{{edition.subtitle}}</td>
               <td>{{#if edition.publishDate}}{{link-to edition.publishDate 'editions.year' edition.publishDate}}{{/if}}</td>
-            </tr>
+            {{/tables.clickable-row}}
           {{/each}}
         </tbody>
       </table>

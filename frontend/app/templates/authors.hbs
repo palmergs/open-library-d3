@@ -16,11 +16,11 @@
         </tfoot>
         <tbody>
           {{#each model as |author|}}
-            <tr>
+            {{#tables.clickable-row action=(action 'showAuthor' author)}}
               <td>{{author.name}}</td>
               <td>{{#if author.birthDate}}{{link-to author.birthDate 'authors.year' author.birthDate}}{{/if}}</td>
               <td>{{author.deathDate}}</td>
-            </tr>
+            {{/tables.clickable-row}}
           {{/each}}
         </tbody>
       </table>

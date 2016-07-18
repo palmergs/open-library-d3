@@ -16,6 +16,9 @@ export default Ember.Controller.extend({
       } else {
         this.set('p', parseInt(val));
       }
+    },
+    showAuthor(author) {
+      this.transitionToRoute('authors.author', author.get('id'));
     }
   }
 });

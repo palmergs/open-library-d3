@@ -16,6 +16,9 @@ export default Ember.Controller.extend({
       } else {
         this.set('p', parseInt(val));
       }
+    },
+    showWork(work) {
+      this.transitionToRoute('works.work', work.get('id'));
     }
   }
 });

@@ -16,6 +16,9 @@ export default Ember.Controller.extend({
       } else {
         this.set('p', parseInt(val));
       }
+    },
+    showEdition(edition) {
+      this.transitionToRoute('editions.edition', edition.get('id'));
     }
   }
 });

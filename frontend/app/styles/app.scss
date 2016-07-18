@@ -60,6 +60,16 @@ label.centered {
 
 table.table {
   width: 100%;
+  tr {
+    &.hover {
+      background-color: '#eef';
+    }
+  }
+  
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .timeline-chart {
