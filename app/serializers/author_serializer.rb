@@ -6,6 +6,7 @@ class AuthorSerializer < ActiveModel::Serializer
       :description, 
       :created_at
 
+  has_many :works
   has_many :subject_tags
   has_many :external_links
 end

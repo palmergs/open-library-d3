@@ -10,6 +10,8 @@ export default Model.extend({
   description: attr('string'),
   createdAt: attr('date'),
 
-  subjectTags: hasMany('subject-tag'),
+  works: hasMany('work'),
 
+  subjectTags: hasMany('subject-tag'),
+  externalLinks: hasMany('external-link')
 });

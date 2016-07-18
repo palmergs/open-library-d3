@@ -4,7 +4,7 @@ class Author < ActiveRecord::Base
   self.primary_key = "id"
 
   has_many :work_authors, dependent: :destroy
-  has_many :authors, through: :work_authors
+  has_many :works, through: :work_authors
 
   has_many :edition_authors, dependent: :destroy
   has_many :editions, through: :edition_authors

@@ -13,4 +13,8 @@ class EditionSerializer < ActiveModel::Serializer
       :edition_authors_count,
       :work_editions_count,
       :created_at
+
+  has_many :works
+  has_many :subject_tags
+  has_many :external_links
 end

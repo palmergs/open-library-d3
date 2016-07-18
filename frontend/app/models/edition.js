@@ -1,6 +1,6 @@
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
+import { hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
   ident: attr('string'),
@@ -16,5 +16,10 @@ export default Model.extend({
   description: attr('string'),
   editionAuthorsCount: attr('number'),
   workEditionsCount: attr('number'),
-  createdAt: attr('date')
+  createdAt: attr('date'),
+
+  works: hasMany('work'),
+
+  subjectTags: hasMany('subject-tag'),
+  externalLinks: hasMany('external-link')
 });
