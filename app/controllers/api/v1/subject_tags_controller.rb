@@ -2,7 +2,7 @@ class Api::V1::SubjectTagsController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @subject_tags = SubjectTag.by_ids(params[:ids]).
+    @subject_tags = SubjectTag.by_ids(coalesce_ids).
         page(page_number).
         per(page_size).
         order(sort_order)

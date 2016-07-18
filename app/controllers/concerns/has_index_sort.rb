@@ -12,7 +12,7 @@ module Concerns
     end
 
     def default_sort
-      { id: :desc }
+      nil
     end
 
     def sort_columns

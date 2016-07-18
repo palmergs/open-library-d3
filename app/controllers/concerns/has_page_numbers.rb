@@ -7,7 +7,7 @@ module Concerns
     end
 
     def page_size
-      params.fetch(:n, 20)
+      params.fetch(:n, coalesce_ids ? coalesce_ids.size : 20)
     end
 
     def pagination_meta query
@@ -18,6 +18,16 @@ module Concerns
           current_page: query.current_page
         }
       end
+    end
+
+    def filter_params
+      filters = params.fetch(:filter, {})
+      filters[:ids] = filters[:id].to_s.split(',').map(&:to_i) if filters[:id].present?
+      filters
+    end
+
+    def coalesce_ids
+      filter_params[:ids]
     end
   end
 end

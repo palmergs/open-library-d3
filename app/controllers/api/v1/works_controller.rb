@@ -2,7 +2,8 @@ class Api::V1::WorksController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @works = Work.by_prefix(params[:q]).
+    @works = Work.by_ids(coalesce_ids).
+        by_prefix(params[:q]).
         by_year(params[:y]).
         page(page_number).
         per(page_size).

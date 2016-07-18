@@ -2,7 +2,8 @@ class Api::V1::EditionsController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @editions = Edition.by_prefix(params[:q]).
+    @editions = Edition.by_ids(coalesce_ids).
+        by_prefix(params[:q]).
         by_year(params[:y]).
         page(page_number).
         per(page_size).

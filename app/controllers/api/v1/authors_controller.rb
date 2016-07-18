@@ -3,7 +3,8 @@ class Api::V1::AuthorsController < ApplicationController
   include Concerns::HasIndexSort
 
   def index
-    @authors = Author.by_prefix(params[:q]).
+    @authors = Author.by_ids(coalesce_ids).
+        by_prefix(params[:q]).
         by_year(params[:y]).
         page(page_number).
         per(page_size).

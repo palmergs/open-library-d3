@@ -2,7 +2,7 @@ class Api::V1::ExternalLinksController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @external_links = ExternalLink.byt_ids(params[:ids]).
+    @external_links = ExternalLink.by_ids(coalesce_ids).
         page(page_number).
         per(page_size).
         order(sort_order)
