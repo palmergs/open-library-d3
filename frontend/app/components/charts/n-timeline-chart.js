@@ -18,12 +18,8 @@ export default Ember.Component.extend(HasChartColors, {
 
   dateField: 'Decade',
 
-  afterRender() {
+  didRender() {
     this._super(...arguments);
-    this.buildChart();
-  },
-
-  buildChart() {
 
     const margin = { top: 20, right: 90, bottom: 30, left: 40 },
       width = (this.get('width') || this.$().width()) - margin.left - margin.right,
@@ -38,13 +34,12 @@ export default Ember.Component.extend(HasChartColors, {
     const path = this.get('path');
     if(path) {
 
-      const params = this.get('params');
-console.log("params", params);
-
-      const fieldNames = Ember.isEmpty(params['q']) ? this.get('fieldNames') : params['q'];
-console.log("fields", fieldNames);
+      const fieldNames = this.get('fieldNames');
 
       const dateField = this.get('dateField');
+
+      // clean out old chart
+      this.$('svg').remove();
 
       const chart = d3.select(this.$().get(0)).
         append('svg').
@@ -54,7 +49,7 @@ console.log("fields", fieldNames);
           attr('transform', 'translate('+ margin.left +','+ margin.top +')');
 
 
-      Ember.$.ajax(path, params).done(function(csv) {
+      Ember.$.ajax(path).done(function(csv) {
 
         const data = d3.csvParse(csv);
         const max = d3.max(data, function(d) { 

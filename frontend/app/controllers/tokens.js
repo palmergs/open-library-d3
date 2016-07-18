@@ -11,6 +11,31 @@ export default Ember.Controller.extend({
   o: null,
   d: null,
 
+  path: Ember.computed('q', function() {
+    
+    const path = `/api/v1/charts/token/timeline?${ this.get('pathParams') }`;
+    return path; 
+  }),
+
+  pathParams: Ember.computed('fieldNames', function() {
+    const arr = this.get('fieldNames');
+    const params = [];
+    arr.forEach((t) => {
+      params.push(`q[]=${ t }`);
+    });
+    return params.join('&');
+  }),
+
+  fieldNames: Ember.computed('q', function() {
+    const q = this.get('q');
+    if(Ember.isEmpty(q)) { 
+      return null;
+    } else {
+      const arr = Array.isArray(q) ? q : q.toString().toLowerCase().split(',');
+      return arr;
+    }
+  }),
+
   queryString: null,
 
   stringFromQuery() {
@@ -37,14 +62,9 @@ export default Ember.Controller.extend({
       }
     },
     setTokens(str) {
-      if(Ember.isEmpty(str)) {
-        this.set('q', null);
-        this.set('p', null);
-      } else {
-        const tokens = str.split(',');
-        console.log(str, tokens);
-        this.set('q', tokens);
-        this.set('p', null);
+      if(!Ember.isEmpty(str)) {
+        const lower = str.toLowerCase();
+        this.transitionToRoute('tokens', { queryParams: { q: lower } });
       }
     },
     resetTokens() {

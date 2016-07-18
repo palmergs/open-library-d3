@@ -6,7 +6,7 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('home', { path: '/' });
+  this.route('tokens', { path: '/' });
   this.route('authors', function() {
     this.route('author', { path: ':id' });
     this.route('year', { path: 'year/:year' });
@@ -19,7 +19,7 @@ Router.map(function() {
     this.route('edition', { path: ':id' });
     this.route('year', { path: 'year/:year' });
   });
-  this.route('tokens', function() {});
+  this.route('home', function() {});
 });
 
 export default Router;

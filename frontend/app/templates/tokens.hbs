@@ -1,11 +1,16 @@
 <div class="container">
   <div class="row">
     <div class="nine columns">
-      {{page-elements.token-comparison params=model }}
+      {{#if fieldNames}}
+        {{charts.n-timeline-chart path=path fieldNames=fieldNames}}
+        <label class="centered">Comparison of {{ fieldNames }}</label>
+      {{else}}
+        <p>Please enter some search terms (comma delimited) to visualize.</p>
+      {{/if}}
     </div>
     <div class="three columns">
       <label>Tokens</label>
-      {{one-way-input queryString 
+      {{one-way-input q 
           keyEvents=(hash 13=(action "setTokens") 27=(action "resetTokens")) 
           classNames="u-full-width" 
           placeholder="enter terms to search"}}
