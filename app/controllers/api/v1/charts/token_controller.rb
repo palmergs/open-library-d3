@@ -5,35 +5,36 @@ class Api::V1::Charts::TokenController < ApplicationController
 
   def timeline
 
-    csv = Rails.cache.fetch("token/token-timeline", expires_in: 1.minute) do
 
-      tokens = Array(params[:q])
-      header = [ 'Decade', 'Count' ]
-      if tokens.empty?
-        all = Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, count(*) as count').
+    tokens = Array(params[:q])
+    header = [ 'Decade' ]
+    if tokens.empty?
+
+      header << 'Count' 
+      all = Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, count(*) as count').
+          where('year between 1000 and 2016').
+          group('decade').
+          order('decade asc')
+      csv = CSV.generate do |table|
+        table << header
+        pad_table(table, [ all ])
+      end
+      render text: csv
+    else
+
+      queries = tokens.each_with_object([]) do |token, array|
+        header << token
+        array << Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, count(*) as count').
+            where(token: Token.normalize(token)).
             where('year between 1000 and 2016').
             group('decade').
             order('decade asc')
-        CSV.generate do |table|
-          table << header
-          pad_table(table, [ all ])
-        end
-      else
-        (1...tokens.size).each {|n| header << "Count#{ n }" }
-
-        queries = tokens.inject([]) do |token|
-          Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, count(*) as count').
-              where(token: Token.normalize(token)).
-              where('year between 1000 and 2016').
-              group('decade').
-              order('decade asc')
-        end
-        CSV.generate do |table|
-          table << header
-          pad_table(table, queries)
-        end
       end
+      csv = CSV.generate do |table|
+        table << header
+        pad_table(table, queries)
+      end
+      render text: csv
     end
-    render text: csv
   end
 end

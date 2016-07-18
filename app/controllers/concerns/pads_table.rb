@@ -13,7 +13,6 @@ module Concerns
       # enumerators MUST be ascending by the time_method
       enumerators = query.is_a?(Array) ? query : [ query ]
       enumerators.map!(&:to_enum)
-
       (start..complete).step(increment) do |n|
         arr = [ n ]
         enumerators.each do |enum|
@@ -24,7 +23,6 @@ module Concerns
             arr << 0 # at the end of the enumerator set value to 0
           end
         end
-
         table << arr
       end
     end
