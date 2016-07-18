@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160717010628) do
+ActiveRecord::Schema.define(version: 20160718113721) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(version: 20160717010628) do
   add_index "tokens", ["category"], name: "index_tokens_on_category", using: :btree
   add_index "tokens", ["token"], name: "index_tokens_on_token", using: :btree
   add_index "tokens", ["token_type", "category", "year"], name: "index_tokens_on_token_type_and_category_and_year", using: :btree
+  add_index "tokens", ["token_type"], name: "index_tokens_on_token_type", using: :btree
   add_index "tokens", ["year"], name: "index_tokens_on_year", using: :btree
 
   create_table "work_authors", force: :cascade do |t|
