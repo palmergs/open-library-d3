@@ -8,7 +8,10 @@ class Api::V1::AuthorsController < ApplicationController
         by_year(params[:y]).
         page(page_number).
         per(page_size).
-        order(sort_order)
+        order(sort_order).
+        includes(:works).
+        includes(:subject_tags).
+        includes(:external_links)
     render json: @authors, meta: { 
       pagination: pagination_meta(@authors)
     }

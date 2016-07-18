@@ -9,8 +9,8 @@ class WorkSerializer < ActiveModel::Serializer
       :work_authors_count,
       :created_at
 
-  has_many :authors
-  has_many :editions
-  has_many :subject_tags
-  has_many :external_links
+  has_many :authors, embed: :ids, include: true
+  has_many :editions, embed: :ids, include: true
+  has_many :subject_tags, embed: :ids, include: true
+  has_many :external_links, embed: :ids, include: true
 end

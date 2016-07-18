@@ -7,7 +7,10 @@ class Api::V1::EditionsController < ApplicationController
         by_year(params[:y]).
         page(page_number).
         per(page_size).
-        order(sort_order)
+        order(sort_order).
+        includes(:works).
+        includes(:external_links).
+        includes(:subject_tags)
     render json: @editions, meta: {
       pagination: pagination_meta(@editions)
     }

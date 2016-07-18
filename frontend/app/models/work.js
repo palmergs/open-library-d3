@@ -13,10 +13,10 @@ export default Model.extend({
   workAuthorsCount: attr('number'),
   createdAt: attr('date'),
 
-  authors: hasMany('author'),
-  editions: hasMany('edition'),
+  authors: hasMany('author', { async: true }),
+  editions: hasMany('edition', { async: true }),
 
-  subjectTags: hasMany('subject-tag'),
-  externalLink: hasMany('external0link'),
+  subjectTags: hasMany('subject-tag', { async: true }),
+  externalLink: hasMany('external-link', { async: true }),
 
 });
