@@ -24,7 +24,7 @@ class Api::V1::Charts::TokenController < ApplicationController
 
       queries = tokens.each_with_object([]) do |token, array|
         header << token
-        array << Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, count(*) as count').
+        array << Token.by_type(params[:t]).by_category(params[:c]).select('((year / 10) * 10) as decade, sum(count) as count').
             where(token: Token.normalize(token)).
             where('year between 1000 and 2016').
             group('decade').
