@@ -17,8 +17,17 @@ export default Ember.Controller.extend({
         this.set('p', parseInt(val));
       }
     },
-    showEdition(edition) {
-      this.transitionToRoute('editions.edition', edition.get('id'));
+    selectRow(row) {
+      this.transitionToRoute('editions.edition', row.get('id'));
+    },
+    sortColumn(col, dir) {
+      if(Ember.isEmpty(col)) {
+        this.set('o', null);
+        this.set('d', null);
+      } else {
+        this.set('o', col);
+        this.set('d', Ember.isEmpty(dir) ? 'asc' : dir);
+      }
     }
   }
 });

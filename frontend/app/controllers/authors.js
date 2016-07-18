@@ -17,8 +17,17 @@ export default Ember.Controller.extend({
         this.set('p', parseInt(val));
       }
     },
-    showAuthor(author) {
-      this.transitionToRoute('authors.author', author.get('id'));
+    selectRow(row) {
+      this.transitionToRoute('authors.author', row.get('id'));
+    },
+    sortColumn(col, dir) {
+      if(Ember.isEmpty(col)) {
+        this.set('o', null);
+        this.set('d', null);
+      } else {
+        this.set('o', col);
+        this.set('d', Ember.isEmpty(dir) ? 'asc' : dir);
+      }
     }
   }
 });

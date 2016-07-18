@@ -16,7 +16,7 @@
         </tfoot>
         <tbody>
           {{#each model as |work|}}
-            {{#tables.clickable-row action=(action 'showWork' work)}}
+            {{#tables.clickable-row action=(action 'selectRow' work)}}
               <td>{{work.title}}</td>
               <td>{{work.subtitle}}</td>
               <td>{{#if work.publishDate}}{{link-to work.publishDate 'works.year' work.publishDate}}{{/if}}</td>

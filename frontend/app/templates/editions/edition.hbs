@@ -1,18 +1,29 @@
 <dl>
   <dt>Title</dt>
-  <dd>{{model.publishDate}}{{#if model.subtitle}}<br/>{{model.subtitle}}{{/if}}</dd>
+  <dd>{{model.title}}
+    {{#if model.subtitle}}<br/>{{model.subtitle}}{{/if}}
+  </dd>
   <dt>Published</dt>
   <dd>{{with-unknown model.publishDate}}</dd>
   <dt>Description</dt>
   <dd>{{model.description}}</dd>
   <dt>Tags</dt>
   <dd>
-  {{#each model.subjectTags as |tag|}}
-    <span class="tag">
-      <span class="name">{{tag.name}}</span>
-      <span class="value">{{tag.value}}</span>
-    </span>
-  {{/each}}
+    {{#each model.subjectTags as |tag|}}
+      {{subject-tag model=tag}}
+    {{/each}}
+  </dd>
+  <dt>Links</dt>
+  <dd>
+    {{#each model.externalLinks as |link|}}
+      {{external-link model=link}}
+    {{/each}}
+  </dd>
+  <dt>Works</dt>
+  <dd>
+    {{#each model.works as |work|}}
+      {{link-to work.title 'works.work' work.id}}
+    {{/each}}
   </dd>
 </dl>
 {{outlet}}

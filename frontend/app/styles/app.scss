@@ -52,6 +52,7 @@
 label {
   font-weight: normal;
   font-size: 12px;
+  margin: 4px 0 0 0;
 }
 
 label.centered {
@@ -60,12 +61,10 @@ label.centered {
 
 table.table {
   width: 100%;
-  tr {
-    &.hover {
-      background-color: '#eef';
-    }
-  }
-  
+}
+
+.hover {
+  background-color: #eef;
 }
 
 .clickable {

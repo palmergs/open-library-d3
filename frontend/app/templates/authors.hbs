@@ -16,7 +16,7 @@
         </tfoot>
         <tbody>
           {{#each model as |author|}}
-            {{#tables.clickable-row action=(action 'showAuthor' author)}}
+            {{#tables.clickable-row action=(action 'selectRow' author)}}
               <td>{{author.name}}</td>
               <td>{{#if author.birthDate}}{{link-to author.birthDate 'authors.year' author.birthDate}}{{/if}}</td>
               <td>{{author.deathDate}}</td>
