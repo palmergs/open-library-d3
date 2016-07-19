@@ -74,18 +74,18 @@ namespace :deploy do
     end
   end
 
-#  desc 'Build ember assets' 
-#  task :build_ember do
-#    on roles(:app) do
-#      run "cd #{ deploy_to }/current && RAILS_ENV=production bundle exec rake ember:compile && cp #{ deploy_to }/current/tmp/ember-cli/apps/frontend/* #{ deploy_to }/current/public/assets/."
-#    end
-#  end
+  desc 'Copy ember assets' 
+  task :copy_ember do
+    on roles(:app) do
+      run "cp #{ deploy_to }/current/tmp/ember-cli/apps/frontend/* #{ deploy_to }/current/public/assets/."
+    end
+  end
 
   before :starting,     :check_revision
   after  :finishing,    :compile_assets
-#  after  :finishing,    :build_ember
   after  :finishing,    :cleanup
   after  :finishing,    :restart
+  after  :finishing,    :copy_ember
 end
 
 # ps aux | grep puma    # Get puma pid

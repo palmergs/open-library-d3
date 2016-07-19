@@ -64,7 +64,11 @@ export default Ember.Controller.extend({
     setTokens(str) {
       if(!Ember.isEmpty(str)) {
         const lower = str.toLowerCase();
-        this.transitionToRoute('tokens', { queryParams: { q: lower } });
+        let arr = lower.split(',');
+console.log(arr);
+        arr = arr.map((s) => { return s.trim(); }); 
+console.log(arr, arr.join(','));
+        this.transitionToRoute('tokens', { queryParams: { q: arr.join(',') } });
       }
     },
     resetTokens() {
