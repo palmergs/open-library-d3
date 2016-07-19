@@ -4,7 +4,6 @@ Open Library Visualizations with D3.js
 Goals
 -----
 
-
 This project is an experiment in working with large datasets of semi-formatted data
 made available by the [OpenLibrary.org](https://openlibrary.org) project. 
 
@@ -26,7 +25,7 @@ Internet Archive's [Terms of Use](https://archive.org/about/terms.php).
 Project Setup
 -------------
 
-This is a standard rails project using [PostgreSQL](https://www.postgresql.org). At a high level the following steps are required:
+This is a Ruby on Rails project using [PostgreSQL](https://www.postgresql.org). At a high level the following steps are required:
 
 * Set up your environment so that Ruby on Rails can run locally. 
 * Clone this repo into a project directory
@@ -46,7 +45,7 @@ Fire up the rails server (e.g. `rails s -p 3030`), if everything is working corr
 Load Data
 ---------
 
-WARNING: This project is essentially just a front end tool for three large data files. The raw file size is approximately 35G and the processed import will generate approximately 280M rows. The full injest time (not counting file downloads) can take over 24 hours on a mid-range desktop computer.
+WARNING: This project is essentially just a front end tool for three large data files. The raw file size is approximately 45G and the processed import will generate approximately 280M rows. The full injest time (not counting file downloads) can take over 24 hours on a mid-range desktop computer.
 
 Download the three individual data files–`ol_dump_editions_latest.txt.gz`, `ol_dump_editions_latest.txt.gz` and `ol_dump_editions_latest.txt.gz`–from OpenLibrary.org and extract them into a directory (e.g. `/path/to/dowloads/OpenLibrary/`). Run the following rake tasks:
 
