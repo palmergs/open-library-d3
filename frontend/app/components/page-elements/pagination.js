@@ -25,12 +25,10 @@ export default Ember.Component.extend({
     for(let i = min; i < pg; ++i) { arr.push({ page: i, current: false}); }
     arr.push({ page: pg, current: true });
     for(let i = pg + 1; i <= max; ++i) { arr.push({ page: i, current: false }); }
-    console.log(arr);
     return arr;
   }),
   actions: {
     pageSelected(val) {
-      console.log("selecting page", val);
       this.sendAction('action', +val);
     }
   }

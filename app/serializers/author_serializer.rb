@@ -1,4 +1,6 @@
 class AuthorSerializer < ActiveModel::Serializer
+  cache key: 'author', expires_in: 24.hours
+
   attributes :id, :ident, 
       :name, 
       :birth_date, 

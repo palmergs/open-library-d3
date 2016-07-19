@@ -1,4 +1,6 @@
 class EditionSerializer < ActiveModel::Serializer
+  cache key: 'edition', expires_in: 24.hours
+
   attributes :id, :ident,
       :title,
       :subtitle,

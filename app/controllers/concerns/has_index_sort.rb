@@ -26,5 +26,16 @@ module Concerns
     def sort_direction
       params[:d].to_s == 'desc' ? 'desc' : 'asc'
     end
+
+    def params_key
+      keys = params.keys
+      arr = keys.sort.each_with_object([]) do |k, arr|
+        v = params[k]
+        if v.present?
+          arr << "#{ k }=#{ v.is_a?(Enumerable) ? v.map(&:to_s).join(',') : v.to_s }"
+        end
+      end
+      arr.join('|')
+    end
   end
 end

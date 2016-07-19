@@ -49,7 +49,6 @@ export default Ember.Controller.extend({
 
   initQueryString: function() {
     const qs = this.stringFromQuery();
-    console.log('init', qs);
     this.set('queryString', this.stringFromQuery());
   }.on('init').observes('params'),
 
@@ -65,9 +64,7 @@ export default Ember.Controller.extend({
       if(!Ember.isEmpty(str)) {
         const lower = str.toLowerCase();
         let arr = lower.split(',');
-console.log(arr);
         arr = arr.map((s) => { return s.trim(); }); 
-console.log(arr, arr.join(','));
         this.transitionToRoute('tokens', { queryParams: { q: arr.join(',') } });
       }
     },

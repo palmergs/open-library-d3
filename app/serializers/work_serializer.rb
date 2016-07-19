@@ -1,4 +1,6 @@
 class WorkSerializer < ActiveModel::Serializer
+  cache key: 'work', expires_in: 24.hours
+
   attributes :id, :ident, 
       :title, 
       :subtitle, 
