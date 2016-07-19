@@ -77,7 +77,7 @@ namespace :deploy do
   desc 'Copy ember assets' 
   task :copy_ember do
     on roles(:app) do
-      run "cp #{ deploy_to }/current/tmp/ember-cli/apps/frontend/* #{ deploy_to }/current/public/assets/."
+      execute "cp #{ deploy_to }/current/tmp/ember-cli/apps/frontend/* #{ deploy_to }/current/public/assets/."
     end
   end
 
