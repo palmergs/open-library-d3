@@ -3,12 +3,13 @@ class Api::V1::TokensController < ApplicationController
   include Concerns::HasIndexSort
 
   def index
-    @tokens = Token.by_token(params[:q]).
+    query = Token.by_token(params[:q]).
         by_type(params[:t]).
-        by_year(params[:y]).
-        page(page_number).per(page_size).order(sort_order)
+        by_year(params[:y])
+
+    @tokens = query.limit(page_size).offset(page_number * page_size).order(sort_order)
     render json: @tokens, meta: {
-      pagination: pagination_meta(@tokens)
+      pagination: pagination_meta(query)
     }
   end
 

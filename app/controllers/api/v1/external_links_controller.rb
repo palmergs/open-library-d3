@@ -2,12 +2,13 @@ class Api::V1::ExternalLinksController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @external_links = ExternalLink.by_ids(coalesce_ids).
-        page(page_number).
-        per(page_size).
+    query = ExternalLink.by_ids(coalesce_ids)
+    @external_links = query.
+        limit(page_size).
+        offset(page_number * page_size).
         order(sort_order)
     render json: @external_links, meta: {
-      pagination: pagination_meta(@external_links)
+      pagination: pagination_meta(query)
     }
   end
 

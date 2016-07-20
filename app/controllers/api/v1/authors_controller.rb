@@ -3,17 +3,18 @@ class Api::V1::AuthorsController < ApplicationController
   include Concerns::HasIndexSort
 
   def index
-    @authors = Author.by_ids(coalesce_ids).
+    query =  Author.by_ids(coalesce_ids).
         by_prefix(params[:q]).
-        by_year(params[:y]).
-        page(page_number).
-        per(page_size).
+        by_year(params[:y])
+    @authors = query.
+        limit(page_size).
+        offset(page_number * page_size).
         order(sort_order).
         includes(:works).
         includes(:subject_tags).
         includes(:external_links)
     render json: @authors, meta: { 
-      pagination: pagination_meta(@authors)
+      pagination: pagination_meta(query)
     }
   end
 

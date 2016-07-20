@@ -2,17 +2,17 @@ class Api::V1::EditionsController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
   def index
-    @editions = Edition.by_ids(coalesce_ids).
+    query = Edition.by_ids(coalesce_ids).
         by_prefix(params[:q]).
-        by_year(params[:y]).
-        page(page_number).
-        per(page_size).
+        by_year(params[:y])
+    @editions = query.
+        limit(page_size).
         order(sort_order).
         includes(:works).
         includes(:external_links).
         includes(:subject_tags)
     render json: @editions, meta: {
-      pagination: pagination_meta(@editions)
+      pagination: pagination_meta(query)
     }
   end
 
