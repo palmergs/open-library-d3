@@ -30,6 +30,7 @@ namespace :etl do
 
     p "reading work data from #{ args.path }..."
     read_authors(args.path)
+    p ".done"
   end
 
   desc "load work data file (WARNING: not idempotent)"
@@ -41,6 +42,7 @@ namespace :etl do
 
     p "reading work data from #{ args.path }..."
     read_works(args.path)
+    p ".done"
   end
 
   desc "load edition data file (WARNING: not idempotent)"
@@ -52,12 +54,28 @@ namespace :etl do
 
     p "reading edition data from #{ args.path }..."
     read_editions(args.path)
+    p ".done"
   end
 
   desc "generate token data"
   task generate_tokens: :environment do 
     p "generating tokens..."
     read_tokens
+    p ".done"
+  end
+
+  desc "aggressively cleanup tables"
+  task aggressive_cleanup: :environment do
+    p "cleaning up tables using VACUUM FULL ANALYZE..."
+    res = Author.connection.execute("VACUUM FULL ANALYZE")
+    p ".done"
+  end
+
+  desc "cleanup tables"
+  task cleanup: :environment do
+    p "cleaning up tables using VACUUM ANALYZE..."
+    res = Author.connection.execute("VACUUM ANALYZE")
+    p ".done"
   end
 
   def read_authors path
