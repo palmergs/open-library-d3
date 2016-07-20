@@ -92,6 +92,27 @@ export default Ember.Component.extend(HasChartColors, {
               attr('height', function(d) { return height - y(+d[field]); }).
               attr('width', x.bandwidth() / fieldNames.length);
         });
+
+        const legend = chart.append('g').attr('class', 'legend').
+            attr('transform', 'translate('+ margin.top +','+ margin.left +')');
+
+            
+        fieldNames.forEach((field, idx) => {
+          legend.append('rect').
+            attr('x', 0).
+            attr('y', idx * 18).
+            attr('height', 15).
+            attr('width', 15).
+            attr('fill', colors[idx]);
+          legend.append('text').
+            attr('x', 20).
+            attr('y', idx * 18 + 12).
+            attr('height', 15).
+            attr('width', 80).
+            attr('fill', '#000000').
+            text(field);
+
+        });
       });
 
     }  
