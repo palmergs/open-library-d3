@@ -3,6 +3,8 @@ class Api::V1::SubjectTagsController < ApplicationController
   include Concerns::HasIndexSort
   def index
     query = SubjectTag.by_ids(coalesce_ids).
+        by_name(params[:c]).
+        by_prefix(params[:q])
     @subject_tags = query.
         limit(page_size).
         offset(page_number * page_size).
