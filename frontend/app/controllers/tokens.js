@@ -71,5 +71,12 @@ export default Ember.Controller.extend({
     resetTokens() {
       this.set('queryString', this.stringFromQuery());
     },
+    setLoading(isLoading) {
+      if(isLoading) {
+        Ember.$('.token-comparison').addClass('loading');
+      } else {
+        Ember.$('.token-comparison').removeClass('loading');
+      }
+    }
   }
 });

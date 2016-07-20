@@ -1,12 +1,14 @@
 <div class="container">
   <div class="row">
     <div class="nine columns">
-      {{#if fieldNames}}
-        {{charts.n-timeline-chart path=path fieldNames=fieldNames}}
-        <label class="centered">Comparison of {{ fieldNames }}</label>
-      {{else}}
-        <p>Please enter some search terms (comma delimited) to visualize.</p>
-      {{/if}}
+      <div class="token-comparison">
+        {{#if fieldNames}}
+          {{charts.n-timeline-chart path=path fieldNames=fieldNames loading=(action 'setLoading')}}
+          <label class="centered">Comparison of {{ fieldNames }}</label>
+        {{else}}
+          <p>Please enter some search terms (comma delimited) to visualize.</p>
+        {{/if}}
+      </div>
     </div>
     <div class="three columns">
       <label>Tokens (comma delimited)</label>

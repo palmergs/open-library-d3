@@ -48,8 +48,10 @@ export default Ember.Component.extend(HasChartColors, {
         append('g').
           attr('transform', 'translate('+ margin.left +','+ margin.top +')');
 
+      this.sendAction('loading', true);
+      Ember.$.ajax(path).done((csv) => {
 
-      Ember.$.ajax(path).done(function(csv) {
+        this.sendAction('loading', false);
 
         const data = d3.csvParse(csv);
         const max = d3.max(data, function(d) { 
