@@ -90,3 +90,9 @@ table.table {
     margin-bottom: 30px;
   }
 }
+
+.loading {
+  min-height: 250px;
+  background: transparent url(/assets/circle-loading-gif.gif) no-repeat center center;
+  opacity: 0.6;
+}
