@@ -3,19 +3,24 @@ module Concerns
     extend ActiveSupport::Concern
 
     def page_number
-      params.fetch(:p, 0)
+      [ params.fetch(:p, 1).to_i - 1, 0 ].max
     end
 
     def page_size
-      params.fetch(:n, coalesce_ids ? coalesce_ids.size : 20)
+      [ params.fetch(:n, coalesce_ids ? coalesce_ids.size : 20), 1 ].max
     end
 
     def pagination_meta query
-      if query.respond_to?(:total_pages)
+      if coalesce_ids
+        { total_pages: 1, total_count: coalesce_ids.size, current_page: 1 }
+      else
+        count = query.count(:id)
+        pages = count / page_size
+        pages += 1 unless count % page_size == 0
         {
-          total_pages: query.total_pages,
-          total_count: query.total_count,
-          current_page: query.current_page
+          total_pages: pages,
+          total_count: count,
+          current_page: page_number + 1
         }
       end
     end
@@ -27,7 +32,7 @@ module Concerns
     end
 
     def coalesce_ids
-      filter_params[:ids]
+      @_coalesce_ids ||= filter_params[:ids]
     end
   end
 end
