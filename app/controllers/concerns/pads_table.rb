@@ -13,12 +13,13 @@ module Concerns
       # enumerators MUST be ascending by the time_method
       enumerators = query.is_a?(Array) ? query : [ query ]
       enumerators.map!(&:to_enum)
+
+      actual_start = start 
       (start..complete).step(increment) do |n|
         arr = [ n ]
         enumerators.each do |enum|
           begin
-            obj, key, val = advance_until(enum, n, time_method, count_method)
-            arr << (key == n ? val : 0)
+            arr << current_value(n, enum, time_method, count_method)
           rescue StopIteration
             arr << 0 # at the end of the enumerator set value to 0
           end
@@ -27,13 +28,15 @@ module Concerns
       end
     end
 
-    def advance_until enum, n, time_method, count_method
-      while true
-        obj = enum.peek
-        key = obj.public_send(time_method)
-        return [ obj, key, obj.public_send(count_method) ] if key >= n
-
+    def current_value current, enum, time_method, count_method
+      obj = enum.peek
+      year = obj.public_send(time_method)
+      count = obj.public_send(count_method)
+      if year <= current
         enum.next
+        count
+      else
+        0
       end
     end
   end
