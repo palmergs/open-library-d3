@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ParsesParams from 'frontend/mixins/parses-params';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(ParsesParams, {
   queryParams: [ 'q', 'y', 'e', 'c', 't', 'p', 'o', 'd' ],
 
   q: null,
@@ -50,24 +51,6 @@ export default Ember.Controller.extend({
     }
   }),
 
-  nullOrIntValue(str, min, max) {
-    if(Ember.isEmpty(str)) {
-      return null;
-    } else {
-      const n = parseInt(str);
-      if(isNaN(n)) { return null; }
-      if(min && n < min) { return min; }
-      if(max && n > max) { return max; }
-      return n;
-    }
-  },
-
-  // params arrive as strings
-  catStr: Ember.computed('c', function() { 
-    const c = this.get('c');
-    if(c) { return c.toString(); }
-    else { return null; }
-  }),
 
   actions: {
     setPage(val) { 
@@ -77,34 +60,46 @@ export default Ember.Controller.extend({
         this.set('p', parseInt(val));
       }
     },
+    
     resetParam(param) {
       const queryParams = this.get('queryParams');
       if(queryParams.indexOf(param) !== -1) { this.set(param, null); }
     },
+    
     setTokens(str) {
+      str = this.strOrInput(str);
+      const q = this.get('q');
       if(!Ember.isEmpty(str)) {
-        const lower = str.toLowerCase();
-        let arr = lower.split(',');
+        let arr = str.toLowerCase().split(',');
         arr = arr.map((s) => { return s.trim(); }); 
-        this.set('q', arr.join(','));
+        const val = arr.join(',');
+        if(val !== q) { this.set('q', val); }
       } else {
-        this.set('q', null);
+        if(q) { this.set('q', null); }
       }
     },
+    
     setStartYear(str) {
+      str = this.strOrInput(str);
       const now = new Date().getFullYear();
       const max = this.get('e') ? Math.min(now, parseInt(this.get('e'))) : now;
-      this.set('y', this.nullOrIntValue(str, 1, max));
+      const n = this.nullOrIntValue(str, 1, max);
+      if(this.get('y') !== n) { this.set('y', n); }
     },
+
     setEndYear(str) {
+      str = this.strOrInput(str);
       const now = new Date().getFullYear();
       const min = this.get('y') ? Math.max(1, parseInt(this.get('y'))) : 1; 
-      this.set('e', this.nullOrIntValue(str, min, now));
+      const n = this.nullOrIntValue(str, min, now);
+      if(this.get('e') !== n) { this.set('e', n); }
     },
+    
     setCategory(str) {
       const cat = this.nullOrIntValue(str, 1, 3);
       this.set('c', cat);
     },
+    
     setType(str) {
       if(Ember.isEmpty(str)) { 
         this.set('t', null);
@@ -112,6 +107,7 @@ export default Ember.Controller.extend({
         this.set('t', str);
       }
     },
+    
     setLoading(isLoading) {
       if(isLoading) {
         Ember.$('.token-comparison').addClass('loading');
