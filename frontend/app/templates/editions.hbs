@@ -34,8 +34,8 @@
         </tfoot>
         <tbody>
           {{#each model as |edition|}}
-            {{#tables.clickable-row action=(action 'selectRow' edition)}}
-              <td>{{edition.title}}</td>
+            {{#tables.clickable-row}}
+              <td>{{link-to edition.title 'editions.edition' edition.id}}</td>
               <td>{{edition.subtitle}}</td>
               <td>{{#if edition.publishDate}}{{link-to edition.publishDate 'editions.year' edition.publishDate}}{{/if}}</td>
             {{/tables.clickable-row}}

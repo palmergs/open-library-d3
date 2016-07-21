@@ -19,7 +19,7 @@ export default Ember.Controller.extend(ParsesParams, {
     setYear(str) {
       str = this.strOrInput(str);
       const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
-      if(this.get('y') !== year) { this.setProperties({ p: null, q: year }); }
+      if(this.get('y') !== year) { this.setProperties({ p: null, y: year }); }
     },
 
     setSearch(str) {

@@ -7,7 +7,8 @@ module Concerns
     end
 
     def page_size
-      [ params.fetch(:n, coalesce_ids ? coalesce_ids.size : 20), 1 ].max
+      Rails.logger.debug(coalesce_ids.inspect)
+      [ params.fetch(:n, coalesce_ids ? coalesce_ids.size : 20).to_i, 1 ].max
     end
 
     def pagination_meta query

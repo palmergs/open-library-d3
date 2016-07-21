@@ -20,13 +20,13 @@ export default Ember.Controller.extend(ParsesParams, {
     setBirthYear(str) {
       str = this.strOrInput(str);
       const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
-      if(this.get('y') !== year) { this.setProperties({ p: null, q: year }); }
+      if(this.get('y') !== year) { this.setProperties({ p: null, y: year }); }
     },
 
     setDeathYear(str) {
       str = this.strOrInput(str);
       const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
-      if(this.get('e') !== year) { this.setProperties({ p: null, q: year }); }
+      if(this.get('e') !== year) { this.setProperties({ p: null, e: year }); }
     },
 
     setSearch(str) {
