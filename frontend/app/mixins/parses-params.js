@@ -29,4 +29,29 @@ export default Ember.Mixin.create({
     if(c) { return c.toString(); }
     else { return null; }
   }),
+
+  actions: {
+    setPage(val) { 
+      if(Ember.isEmpty(val) || isNaN(parseInt(val))) { 
+        this.set('p', null);
+      } else {
+        this.set('p', parseInt(val));
+      }
+    },
+
+    sortColumn(col, dir) {
+      if(Ember.isEmpty(col)) {
+        this.set('o', null);
+        this.set('d', null);
+      } else {
+        this.set('o', col);
+        this.set('d', Ember.isEmpty(dir) ? 'asc' : dir);
+      }
+    },
+
+    resetParam(param) {
+      const queryParams = this.get('queryParams');
+      if(queryParams.indexOf(param) !== -1) { this.set(param, null); }
+    }
+  }
 });

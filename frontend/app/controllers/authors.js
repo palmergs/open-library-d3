@@ -1,32 +1,40 @@
 import Ember from 'ember';
+import ParsesParams from 'frontend/mixins/parses-params';
 
-export default Ember.Controller.extend({
-  queryParams: [ 'q', 'y', 'p', 'o', 'd' ],
+export default Ember.Controller.extend(ParsesParams, {
+  queryParams: [ 'q', 'y', 'e', 'p', 'o', 'd' ],
 
   q: null,
   y: null,
+  e: null,
   p: null,
   o: null,
   d: null,
 
   actions: {
-    setPage(val) { 
-      if(Ember.isEmpty(val) || isNaN(parseInt(val))) { 
-        this.set('p', null);
-      } else {
-        this.set('p', parseInt(val));
-      }
-    },
+
     selectRow(row) {
       this.transitionToRoute('authors.author', row.get('id'));
     },
-    sortColumn(col, dir) {
-      if(Ember.isEmpty(col)) {
-        this.set('o', null);
-        this.set('d', null);
+
+    setBirthYear(str) {
+      str = this.strOrInput(str);
+      const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
+      if(this.get('y') !== year) { this.setProperties({ p: null, q: year }); }
+    },
+
+    setDeathYear(str) {
+      str = this.strOrInput(str);
+      const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
+      if(this.get('e') !== year) { this.setProperties({ p: null, q: year }); }
+    },
+
+    setSearch(str) {
+      str = this.strOrInput(str);
+      if(Ember.isEmpty(str)) {
+        if(this.get('q')) { this.setProperties({ p: null, q: null }); }
       } else {
-        this.set('o', col);
-        this.set('d', Ember.isEmpty(dir) ? 'asc' : dir);
+        if(this.get('q') !== str) { this.setProperties({ p: null, q: str }); }
       }
     }
   }

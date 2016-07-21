@@ -53,19 +53,6 @@ export default Ember.Controller.extend(ParsesParams, {
 
 
   actions: {
-    setPage(val) { 
-      if(Ember.isEmpty(val) || isNaN(parseInt(val))) { 
-        this.set('p', null);
-      } else {
-        this.set('p', parseInt(val));
-      }
-    },
-    
-    resetParam(param) {
-      const queryParams = this.get('queryParams');
-      if(queryParams.indexOf(param) !== -1) { this.set(param, null); }
-    },
-    
     setTokens(str) {
       str = this.strOrInput(str);
       const q = this.get('q');

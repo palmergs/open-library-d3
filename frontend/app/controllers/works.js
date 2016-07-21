@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import ParsesParams from 'frontend/mixins/parses-params';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(ParsesParams, {
   queryParams: [ 'q', 'y', 'p', 'o', 'd' ],
 
   q: null,
@@ -10,23 +11,23 @@ export default Ember.Controller.extend({
   d: null,
 
   actions: {
-    setPage(val) { 
-      if(Ember.isEmpty(val) || isNaN(parseInt(val))) { 
-        this.set('p', null);
-      } else {
-        this.set('p', parseInt(val));
-      }
-    },
+
     selectRow(row) {
       this.transitionToRoute('works.work', row.get('id'));
     },
-    sortColumn(col, dir) {
-      if(Ember.isEmpty(col)) {
-        this.set('o', null);
-        this.set('d', null);
+
+    setYear(str) {
+      str = this.strOrInput(str);
+      const year = this.nullOrIntValue(str, 1, new Date().getFullYear());
+      if(this.get('y') !== year) { this.setProperties({ p: null, q: year }); }
+    },
+
+    setSearch(str) {
+      str = this.strOrInput(str);
+      if(Ember.isEmpty(str)) {
+        if(this.get('q')) { this.setProperties({ p: null, q: null }); }
       } else {
-        this.set('o', col);
-        this.set('d', Ember.isEmpty(dir) ? 'asc' : dir);
+        if(this.get('q') !== str) { this.setProperties({ p: null, q: str }); }
       }
     }
   }

@@ -8,6 +8,32 @@
             <th>Birth</th>
             <th>Death</th>
           </tr>
+          <tr>
+            <td>
+              {{one-way-input q 
+                  focusOut=(action 'setSearch')
+                  keyEvents=(hash 13=(action "setSearch") 27=(action "resetParam" 'q'))
+                  classNames="u-full-width" 
+                  title="enter/return to search, escape to clear"
+                  placeholder="by prefix (title only)"}}
+            </td>
+            <td>
+              {{one-way-input y 
+                  focusOut=(action 'setBirthYear')
+                  keyEvents=(hash 13=(action "setBirthYear") 27=(action "resetParam" 'y'))
+                  classNames="u-full-width" 
+                  title="enter/return to search, escape to clear"
+                  placeholder="by year"}}
+            </td>
+            <td>
+              {{one-way-input e 
+                  focusOut=(action 'setDeathYear')
+                  keyEvents=(hash 13=(action "setDeathYear") 27=(action "resetParam" 'e'))
+                  classNames="u-full-width" 
+                  title="enter/return to search, escape to clear"
+                  placeholder="by year"}}
+            </td>
+          </tr>
         </thead>
         <tfoot>
           <tr>
