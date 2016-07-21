@@ -11,7 +11,7 @@ class Api::V1::Charts::TokenController < ApplicationController
     end_year = default_or_int(params[:e], 1, now, now)
     start_year = default_or_int(params[:y], 1, end_year, 1000)
     diff = end_year - start_year
-    slice = [[10, diff / 100].min, 1].max
+    slice = [[50, diff / 100].min, 1].max
 
     header = [ 'Decade' ]
     if tokens.empty?
