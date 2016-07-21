@@ -1,28 +1,42 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
-  queryParams: [ 'q', 'y', 'c', 't', 'p', 'o', 'd' ],
+  queryParams: [ 'q', 'y', 'e', 'c', 't', 'p', 'o', 'd' ],
 
   q: null,
   y: null,
+  e: null,
   c: null,
   t: null,
   p: null,
   o: null,
   d: null,
 
-  path: Ember.computed('q', function() {
+  path: Ember.computed('pathParams', function() {
     
     const path = `/api/v1/charts/token/timeline?${ this.get('pathParams') }`;
     return path; 
   }),
 
-  pathParams: Ember.computed('fieldNames', function() {
+  pathParams: Ember.computed('fieldNames', 'y', 'e', 'c', 't', function() {
     const arr = this.get('fieldNames');
     const params = [];
     arr.forEach((t) => {
       params.push(`q[]=${ t }`);
     });
+
+    const y = this.get('y');
+    if(y) { params.push(`y=${ y }`); }
+
+    const e = this.get('e');
+    if(e) { params.push(`e=${ e }`); }
+
+    const c = this.get('c');
+    if(c) { params.push(`c=${ c }`); }
+
+    const t = this.get('t');
+    if(t) { params.push(`t=${ t }`); }
+
     return params.join('&');
   }),
 
@@ -36,21 +50,24 @@ export default Ember.Controller.extend({
     }
   }),
 
-  queryString: null,
-
-  stringFromQuery() {
-    const q = this.get('q');
-    if(Ember.isEmpty(q)) {
-      return '';
+  nullOrIntValue(str, min, max) {
+    if(Ember.isEmpty(str)) {
+      return null;
     } else {
-      return Array.isArray(q) ? q.join(',') : q.toString();
+      const n = parseInt(str);
+      if(isNaN(n)) { return null; }
+      if(min && n < min) { return min; }
+      if(max && n > max) { return max; }
+      return n;
     }
   },
 
-  initQueryString: function() {
-    const qs = this.stringFromQuery();
-    this.set('queryString', this.stringFromQuery());
-  }.on('init').observes('params'),
+  // params arrive as strings
+  catStr: Ember.computed('c', function() { 
+    const c = this.get('c');
+    if(c) { return c.toString(); }
+    else { return null; }
+  }),
 
   actions: {
     setPage(val) { 
@@ -60,16 +77,40 @@ export default Ember.Controller.extend({
         this.set('p', parseInt(val));
       }
     },
+    resetParam(param) {
+      const queryParams = this.get('queryParams');
+      if(queryParams.indexOf(param) !== -1) { this.set(param, null); }
+    },
     setTokens(str) {
       if(!Ember.isEmpty(str)) {
         const lower = str.toLowerCase();
         let arr = lower.split(',');
         arr = arr.map((s) => { return s.trim(); }); 
-        this.transitionToRoute('tokens', { queryParams: { q: arr.join(',') } });
+        this.set('q', arr.join(','));
+      } else {
+        this.set('q', null);
       }
     },
-    resetTokens() {
-      this.set('queryString', this.stringFromQuery());
+    setStartYear(str) {
+      const now = new Date().getFullYear();
+      const max = this.get('e') ? Math.min(now, parseInt(this.get('e'))) : now;
+      this.set('y', this.nullOrIntValue(str, 1, max));
+    },
+    setEndYear(str) {
+      const now = new Date().getFullYear();
+      const min = this.get('y') ? Math.max(1, parseInt(this.get('y'))) : 1; 
+      this.set('e', this.nullOrIntValue(str, min, now));
+    },
+    setCategory(str) {
+      const cat = this.nullOrIntValue(str, 1, 3);
+      this.set('c', cat);
+    },
+    setType(str) {
+      if(Ember.isEmpty(str)) { 
+        this.set('t', null);
+      } else {
+        this.set('t', str);
+      }
     },
     setLoading(isLoading) {
       if(isLoading) {
