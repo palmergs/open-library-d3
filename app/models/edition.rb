@@ -1,5 +1,6 @@
 class Edition < ActiveRecord::Base
   include Concerns::IsScopedByIds
+  include Concerns::IsScopedByLike
 
   has_many :work_editions, dependent: :destroy
   has_many :works, through: :work_editions
@@ -12,8 +13,7 @@ class Edition < ActiveRecord::Base
 
   scope :by_prefix, ->(q) {
     if q.present?
-      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
-      where('title like ?', "#{ santitized }%")
+      where('title like ?', "#{ sanitized_for_like(q) }%")
     end
   }
 

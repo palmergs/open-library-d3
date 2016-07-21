@@ -1,5 +1,6 @@
 class SubjectTag < ActiveRecord::Base
   include Concerns::IsScopedByIds
+  include Concerns::IsScopedByLike
 
   scope :by_name, ->(c) {
     if c.present?
@@ -9,8 +10,7 @@ class SubjectTag < ActiveRecord::Base
 
   scope :by_prefix, ->(q) {
     if q.present?
-      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
-      where('value like ?', "#{ sanitized }%")
+      where('value like ?', "#{ sanitized_for_like(q) }%")
     end
   }
 end

@@ -1,5 +1,6 @@
 class Work < ActiveRecord::Base
   include Concerns::IsScopedByIds
+  include Concerns::IsScopedByLike
 
   has_many :work_authors, dependent: :destroy
   has_many :authors, through: :work_authors
@@ -12,8 +13,7 @@ class Work < ActiveRecord::Base
 
   scope :by_prefix, ->(q) {
     if q.present?
-      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
-      where('title like ?', "#{ sanitized }%")
+      where('title like ?', "#{ sanitized_for_like(q) }%")
     end
   }
 

@@ -1,5 +1,6 @@
 class Author < ActiveRecord::Base
   include Concerns::IsScopedByIds
+  include Concerns::IsScopedByLike
 
   self.primary_key = "id"
 
@@ -14,14 +15,19 @@ class Author < ActiveRecord::Base
 
   scope :by_prefix, ->(q) {
     if q.present?
-      sanitized = q.to_s.strip.gsub(/[[:punct]=+$><]/, '')
-      where('name like ?', "#{ sanitized }%")
+      where('name like ?', "#{ sanitized_for_like(q) }%")
     end
   }
 
   scope :by_year, ->(year) {
     if year && year.to_i > 0
       where(birth_date: year.to_i)
+    end
+  }
+
+  scope :by_death_year, ->(year) {
+    if year && year.to_i > 0
+      where(death_date: year.to_i)
     end
   }
 end
