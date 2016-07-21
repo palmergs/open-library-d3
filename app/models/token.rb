@@ -43,7 +43,7 @@ class Token < ActiveRecord::Base
 
   scope :by_type, ->(t) {
     if t
-      arr = Array(t).select {|s| TOKEN_TYPE.include?(s.to_s) }
+      arr = Array(t).select {|s| TOKEN_TYPES.include?(s.to_s) }
       if arr.size > 0
         where(token_type: arr)
       else
