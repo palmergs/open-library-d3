@@ -5,7 +5,8 @@ class Api::V1::AuthorsController < ApplicationController
   def index
     query =  Author.by_ids(coalesce_ids).
         by_prefix(params[:q]).
-        by_year(params[:y])
+        by_year(params[:y]).
+        by_death_year(params[:e])
     @authors = query.
         limit(page_size).
         offset(page_number * page_size).
