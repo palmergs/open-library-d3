@@ -39,6 +39,7 @@ end
 gem 'puma'
 
 group :development do
+  gem 'rails-erd'
   gem 'capistrano'
   gem 'capistrano-rvm'
   gem 'capistrano-rails'
