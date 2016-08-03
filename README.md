@@ -55,6 +55,11 @@ Download the three individual data files–`ol_dump_editions_latest.txt.gz`, `ol
 * `rake generate_tokens`
 * or a catch-all task: `rake load_all[/path/to/downloads/OpenLibrary]`
 
+Model
+-----
+
+![ERD Diagram](https://github.com/palmergs/open-library-d3/blob/master/docs/erd.png)
+
 
 Next Steps
 ----------
