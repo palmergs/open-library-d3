@@ -5,6 +5,12 @@ export default Ember.Component.extend({
     const pg = this.get('model.meta').pagination['current-page'];
     return pg;
   }),
+  previousPage: Ember.computed('currentPage', function() {
+    return this.get('currentPage') - 1;
+  }),
+  nextPage: Ember.computed('currentPage', function() {
+    return this.get('currentPage') + 1;
+  }),
   lastPage: Ember.computed('model', function() {
     const pg = this.get('model.meta').pagination['total-pages'];
     return pg;
