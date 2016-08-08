@@ -1,8 +1,8 @@
 class Api::V1::WorksController < ApplicationController
   include Concerns::HasPageNumbers
   include Concerns::HasIndexSort
+
   def index
-   
     query = Work.by_ids(coalesce_ids).
         by_prefix(params[:q]).
         by_year(params[:y])
