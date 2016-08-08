@@ -64,11 +64,10 @@ Model
 Next Steps
 ----------
 
-* Performance and caching
-* Loading indicators
 * Animate chart rending
 * Add [Liquid Fire](https://github.com/ember-animation/liquid-fire) for route transitions
 * Intelligent wrap of pie chart labels
+* Sidebar visualization of terms 
 
 TODO
 ----
