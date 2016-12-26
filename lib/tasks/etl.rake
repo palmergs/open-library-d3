@@ -17,7 +17,6 @@ namespace :etl do
     read_authors(args.path)
     read_works(args.path)
     read_editions(args.path)
-    read_tokens
 
   end
 
@@ -57,13 +56,6 @@ namespace :etl do
     p ".done"
   end
 
-  desc "generate token data"
-  task generate_tokens: :environment do 
-    p "generating tokens..."
-    read_tokens
-    p ".done"
-  end
-
   desc "aggressively cleanup tables"
   task aggressive_cleanup: :environment do
     p "cleaning up tables using VACUUM FULL ANALYZE..."
@@ -85,11 +77,14 @@ namespace :etl do
     WorkAuthor.delete_all
     EditionAuthor.delete_all
     Author.delete_all
+    Token.where(token_type: 'Author').delete_all
+
     p ". done deleting author data"
 
     p ". reading author data"
     as = AuthorSupport.new(path)
-    as.read
+    as.build_tokens
+    as.save_tokens
     p ". done reading authors"
   end
 
@@ -100,11 +95,13 @@ namespace :etl do
     WorkAuthor.delete_all
     WorkEdition.delete_all
     Work.delete_all
+    Token.where(token_type: 'Work').delete_all
     p ". done deleting work data"
 
     p ". reading work data"
     ws = WorkSupport.new(path)
-    ws.read
+    ws.build_tokens
+    ws.save_tokens
     p ". done reading works"
   end
 
@@ -116,24 +113,13 @@ namespace :etl do
     EditionAuthor.delete_all
     WorkEdition.delete_all
     Edition.delete_all
-    p ". done deleting author data"
+    Token.where(token_type: 'Edition').delete_all
+    p ". done deleting edition data"
 
-    p ". reading author data"
+    p ". reading edition data"
     es = EditionSupport.new(path)
-    es.read
+    es.build_tokens
+    es.save_tokens
     p ". done reading editions"
-  end
-
-  def read_tokens
-    p ". deleting token data"
-    Token.delete_all
-    p ". done deleting token data"
-
-    p ". generating tokens"
-    ts = TokenSupport.new
-    ts.process_authors
-    ts.process_works
-    ts.process_editions
-    p ". done generating tokens"
   end
 end

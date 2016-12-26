@@ -1,10 +1,10 @@
 require 'counter'
 
-class OpenLibrarySupport 
+class OpenLibrarySupport
 
   attr_reader :base_path
-  
-  BATCH_SIZE = 1200
+
+  BATCH_SIZE = 12000
 
   def initialize path
     @base_path = path
@@ -53,15 +53,15 @@ class OpenLibrarySupport
       if parent_id
         inserts = []
         new_links.each do |link|
-          arr = [ parent_id, 
-                  str_val(clazz.name), 
-                  str_val(link[:name][0..23]), 
+          arr = [ parent_id,
+                  str_val(clazz.name),
+                  str_val(link[:name][0..23]),
                   str_val(link[:value]),
                   str_val(DateTime.now.to_s),
                   str_val(DateTime.now.to_s) ]
           inserts << "(#{ arr.join(', ') })"
         end
-        
+
         if inserts.count > 0
           cnt += inserts.count
           sql = "INSERT INTO external_links (linkable_id, linkable_type, name, value, created_at, updated_at) VALUES #{ inserts.join(', ') }"
@@ -82,9 +82,9 @@ class OpenLibrarySupport
       if parent_id
         inserts = []
         new_tags.each do |tag|
-          arr = [ parent_id, 
-                  str_val(clazz.name), 
-                  str_val(tag[:name][0..23]), 
+          arr = [ parent_id,
+                  str_val(clazz.name),
+                  str_val(tag[:name][0..23]),
                   str_val(tag[:value]),
                   str_val(DateTime.now.to_s),
                   str_val(DateTime.now.to_s) ]
@@ -121,7 +121,7 @@ class OpenLibrarySupport
   end
 
   def add_tags array, hash, key, category = nil
-    return unless hash && hash[key] 
+    return unless hash && hash[key]
 
     category ||= key
     arr = hash[key]
@@ -155,18 +155,44 @@ class OpenLibrarySupport
   YEAR_MATCH_REGEX = /[\d]{4}/
   CURRENT_YEAR = Time.now.year
 
+  def safe_century str
+    if match = str.match(/^(\d+)(st|rd|nd|th) c/i)
+      n = match[1].to_i
+      (n * 100) - 50
+    else
+      nil
+    end
+  end
+
+  def safe_bce str
+    if match = str.match(/^(\d+)\s*b\.?c/i)
+      n = match[1].to_i
+      (-1 * n)
+    else
+      nil
+    end
+  end
+
   # note: currently can not handle BCE year values
   def safe_year hash, key
     str = str_or_value(hash[key])
     return nil unless str && str.strip.present?
 
-    # allow a single integer to go through
+    # check for century 
     str = str.strip
-    return str.to_i if str =~ /^[\d]{1,4}$/
+    year = safe_century(str)
+    return year if year
 
-    # otherwise assume that a 4 digit integer from 1000 to 2016 is the year
+    # check for ancient text
+    bce = safe_bce(str)
+    return bce if bce
+
+    # check for 2 to 4 digit year
+    return str.to_i if str =~ /^[\d]{2,4}$/ && str.to_i <= CURRENT_YEAR
+
+    # otherwise assume that a 4 digit integer from 1000 to current year is the year
     years = str.split(YEAR_SPLIT_REGEX).select {|s| s =~ YEAR_MATCH_REGEX }
-    if years && years.length > 0 
+    if years && years.length > 0
       year = years[0].to_i
       year > CURRENT_YEAR ? nil : year
     else
@@ -188,7 +214,7 @@ class OpenLibrarySupport
     return nil unless str
     str = str.first if str.is_a?(Array)
     i = str.to_i
-    return zero_valid || i > 0 ? i : nil 
+    return zero_valid || i > 0 ? i : nil
   end
 
   def safe_sub hash, key, subkey = 'value'
@@ -200,4 +226,3 @@ class OpenLibrarySupport
     return tmp.to_s
   end
 end
-

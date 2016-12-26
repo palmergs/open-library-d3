@@ -2,102 +2,41 @@ require 'unidecoder'
 
 class TokenSupport
 
-  def process_all
-    process_authors
-    process_works
-    process_editions
-  end
-
-  def process_authors
-
-    process(Author, :birth_date, :name, Token::IDENTIFIER)
-    process(Author, :birth_date, :description, Token::DESCRIPTION)
-
-  end
-
-  def process_works
-
-    process(Work, :publish_date, [:title, :subtitle], Token::IDENTIFIER)
-    process(Work, :publish_date, :description, Token::DESCRIPTION)
-    process(Work, :publish_date, :excerpt, Token::CONTENT)
-
-  end
-
-
-  def process_editions
-
-    process(Edition, :publish_date, [ :title, :subtitle, :statement, :series ], Token::IDENTIFIER)
-    process(Edition, :publish_date, :description, Token::DESCRIPTION)
-    process(Edition, :publish_date, :excerpt, Token::CONTENT)
-
-  end
-
-  def process clazz, date_field, text_fields, category
-
-    range = date_range(clazz, date_field)
-    if range
-      range.each do |year|
-        if year > 0 && year <= Date.today.year
-          hash = build_hash(clazz, date_field, text_fields, year)
-          inserted = insert_all(clazz, category, year, hash)
-          pp ". #{ year }: inserted #{ inserted } tokens for #{ clazz.name } (#{ category })"
+  def save_hash type, hash
+    year_to_count = {}
+    hash.each do |year, h2|
+      arr = []
+      h2.each do |category, h3|
+        h3.each do |token, count|
+          escaped_quote = token[0...59].gsub("'", "''")
+          arr << "('#{ type }',#{ category },#{ year },'#{ escaped_quote }',#{ count })"
         end
       end
-    end
-  end
-
-  def date_range clazz, date_field
-    min = clazz.minimum(date_field.to_sym)
-    max = clazz.maximum(date_field.to_sym)
-    if min && max
-      (min..max)
-    else
-      nil
-    end
-  end
-
-  PAGE_SIZE = 2000
-
-  def build_hash clazz, date_field, text_fields, year
-    text_fields = Array(text_fields)
-    hash = Hash.new(0)
-
-    total = clazz.where(date_field.to_sym => year).count
-    pages = total / PAGE_SIZE + 1
-    pages.times do |pg|
-      query = clazz.where(date_field.to_sym => year).offset(PAGE_SIZE * pg).limit(PAGE_SIZE)
-      query.each do |record|
-        text_fields.each do |field|
-          string = record.read_attribute(field)
-          normalized_tokens(string).each do |token|
-            hash[token] += 1
-          end
-        end
+      if arr.length > 0
+        headers = "token_type, category, year, token, count"
+        rows = arr.join(', ')
+        sql = "INSERT INTO tokens (#{ headers }) VALUES #{ rows }"
+        Token.connection.execute( sql )
+        pp "#{ year }: #{ arr.length }"
+        year_to_count[year] = arr.length
       end
     end
-    hash
+    year_to_count
   end
 
-
-  def insert_all clazz, category, year, hash
-    arr = []
-    hash.each_pair do |token, count|
-      unless Token::STOP_WORDS.include?(token)
-        escaped_quote = token[0...59].gsub("'", "''")
-        arr << "('#{ clazz.name }', #{ category }, #{ year }, '#{ escaped_quote }', #{ count } )"
-      end
-    end
-
-    if arr.length > 0
-      sql = "INSERT INTO tokens (token_type, category, year, token, count) VALUES #{ arr.join(', ') }"
-      Token.connection.execute( sql )
-    end
-
-    arr.length
-  end
 
   def normalized_tokens str
     Token.tokenize(str)
+  end
+
+  def self.token_aggregator
+    Hash.new do |h1, k1|
+      h1[k1.to_i] = Hash.new do |h2, k2|
+        h2[k2.to_i] = Hash.new do |h3, k3|
+          h3[k3] = 0
+        end
+      end
+    end
   end
 
 end

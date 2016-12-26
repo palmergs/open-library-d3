@@ -54,7 +54,10 @@ class Token < ActiveRecord::Base
 
   def self.tokenize str
     return [] unless str && str.to_s.present?
-    normalize(str).scan(/[\w][\w'-]+/)
+    arr = normalize(str).scan(/[\w][\w'-]+/)
+    arr = arr.map {|t| t.split(/[-_]/) }.flatten
+    arr = arr.reject {|t| t.length < 2}
+    arr.reject {|t| STOP_WORDS.include?(t)}
   end
 
   def self.normalize str
