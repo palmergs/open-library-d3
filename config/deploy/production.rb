@@ -9,7 +9,7 @@
 
 set :rails_env, 'production'
 set :user, 'deployer'
-set :deploy_to, '/home/palmergs/apps/library'
+set :deploy_to, '/home/deployer/apps/library'
 set :branch, ENV["BRANCH"] || raise("set BRANCH value in environment")
 
 server '159.203.129.120', user: 'deployer', roles: %w{ web app db }
