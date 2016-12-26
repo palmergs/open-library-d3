@@ -44,7 +44,7 @@ module.exports = function(environment) {
       'default-src': "'none'",
       'script-src': "'self'",
       'font-src': "'self'",
-      'connect-src': "'self' localhost:* 192.241.150.55 galenpalmer.org",
+      'connect-src': "'self' localhost:* 159.203.129.120 galenpalmer.org",
       'img-src': "'self' data:",
       'style-src': "'self' 'unsafe-inline' 'unsafe-eval'",
       'media-src': "'self'"
