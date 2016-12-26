@@ -8,11 +8,11 @@
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
 set :rails_env, 'production'
-set :user, 'palmergs'
+set :user, 'deployer'
 set :deploy_to, '/home/palmergs/apps/library'
 set :branch, ENV["BRANCH"] || raise("set BRANCH value in environment")
 
-server '198.199.122.218', user: 'palmergs', roles: %w{ web app db }
+server '159.203.129.120', user: 'deployer', roles: %w{ web app db }
 
 # role-based syntax
 # ==================
