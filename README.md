@@ -55,6 +55,11 @@ Download the three individual data files–`ol_dump_editions_latest.txt.gz`, `ol
 * `rake generate_tokens`
 * or a catch-all task: `rake load_all[/path/to/downloads/OpenLibrary]`
 
+Screenshot
+----------
+
+![Screenshot](screenshot.png)
+
 Model
 -----
 
