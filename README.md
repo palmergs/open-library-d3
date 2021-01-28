@@ -49,9 +49,9 @@ WARNING: This project is essentially just a front end tool for three large data 
 
 Download the three individual data files–`ol_dump_editions_latest.txt.gz`, `ol_dump_editions_latest.txt.gz` and `ol_dump_editions_latest.txt.gz`–from OpenLibrary.org and extract them into a directory (e.g. `/path/to/dowloads/OpenLibrary/`). Run the following rake tasks:
 
-* `rake load_authors[/path/to/downloads/OpenLibrary]`
-* `rake load_works[/path/to/downloads/OpenLibrary]`
-* `rake load_editions[/path/to/downloads/OpenLibrary]`
+* `rake etl:load_authors[/path/to/downloads/OpenLibrary]`
+* `rake etl:load_works[/path/to/downloads/OpenLibrary]`
+* `rake etl:load_editions[/path/to/downloads/OpenLibrary]`
 * `rake generate_tokens`
 * or a catch-all task: `rake load_all[/path/to/downloads/OpenLibrary]`
 
@@ -69,3 +69,8 @@ Next Steps
 * Intelligent wrap of pie chart labels
 * Sidebar visualization of terms 
 
+
+Notes 2021
+----------
+
+This appears to work after updating the Rails version to 4.2 and adding a pin on ember-inflector to 2.2.0 under node 10.x.  
